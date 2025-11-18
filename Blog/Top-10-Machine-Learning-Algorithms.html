@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Kudos AI | Blog | Top 10 Machine Learning Algorithms Explained — Intuition, Math, Code, and Use Cases</title>
+  <meta name="description"
+        content="A deep yet beginner-friendly guide to the Top 10 Machine Learning Algorithms: intuition, math, code, and real-world use cases. Includes Linear & Logistic Regression, Decision Trees, Random Forests, SVMs, KNN, Naive Bayes, K-Means, PCA, Neural Networks, plus Ensembles (XGBoost/AdaBoost), history, interview Q&A, tips, and visuals." />
+  <meta name="keywords"
+        content="machine learning algorithms, top 10 ML, linear regression, logistic regression, decision tree, random forest, SVM, KNN, Naive Bayes, k-means, PCA, neural networks, XGBoost, AdaBoost, gradient boosting, math, code, Python, scikit-learn, beginner-friendly" />
+
+  <!-- CSS & Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+  <link rel="stylesheet" href="/styles.css" />
+
+  <!-- Code highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/styles/github.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.3/highlight.min.js"></script>
+  <script>window.addEventListener('DOMContentLoaded',()=>hljs.highlightAll());</script>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VCL644R1SZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-VCL644R1SZ');
+  </script>
+
+  <link rel="icon" type="image/x-icon" href="/Kudos_AI_favicon.png" />
+
+  <!-- MathJax -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    /* Article-local helpers that match your template vibe */
+    .highlight{color:#007bff;font-weight:bold;}
+    p{margin-bottom:1em;}
+    .postBody-div .note{background:#eef7ff;border-left:4px solid #007bff;padding:12px;border-radius:6px;margin:16px 0;}
+    .postBody-div .tip{background:#fff7e6;border-left:4px solid #ffbf00;padding:12px;border-radius:6px;margin:16px 0;}
+    .postBody-div .warn{background:#ffecec;border-left:4px solid #ff4d4f;padding:12px;border-radius:6px;margin:16px 0;}
+    .mini{font-size:.96em;color:#444;}
+    .toc a{color:#007bff;text-decoration:none;}
+    .toc a:hover{text-decoration:underline;}
+    .boxed{border:1px solid #007bff;border-radius:6px;padding:10px 14px;background:#eef7ff;}
+    .image-container{text-align:center;margin:22px 0;}
+    .responsive-image{max-width:100%;height:auto;border-radius:8px;}
+    .video-container{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;background:#000;margin:0 auto;border-radius:12px;}
+    .video-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:12px;}
+    pre{background:#f8f9fa;border:1px solid #e0e0e0;border-radius:8px;padding:12px;overflow:auto;}
+    code{font-family:Consolas,Monaco,'Courier New',monospace;}
+    .math-equation{font-family:"Courier New",monospace;text-align:center;margin:12px auto;white-space:nowrap;overflow-x:auto;}
+    h3{text-align:center;}
+    h4{text-align:left;}
+    .checklist li{margin-bottom:.4em;}
+    .table-wrapper{overflow-x:auto;}
+    table.alg-table{width:100%;min-width:640px;border-collapse:collapse;margin:8px 0;}
+    table.alg-table th, table.alg-table td{border:1px solid #ddd;padding:8px;}
+    table.alg-table th{background:#f1f6ff;}
+  </style>
+</head>
+
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-light" style="background-color:white;">
+    <a class="navbar-brand" href="/index.html"><img width="180" src="/Kudos_AI_logo_transparent.png" alt="Kudos AI Logo" /></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNavbarToggler10"
+            aria-controls="myNavbarToggler10" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="myNavbarToggler10">
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item"><a class="nav-link" href="/index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="/Projects.html">Projects</a></li>
+        <li class="nav-item"><a class="nav-link" href="/About-me.html">About me</a></li>
+        <li class="nav-item"><a class="nav-link" href="/Blog.html">Blog</a></li>
+        <li class="nav-item"><a class="nav-link" href="/Get-in-Touch.html">Get in Touch</a></li>
+      </ul>
+      <ul class="navbar-nav sm-icons mr-0 d-flex justify-content-center">
+        <li class="nav-item"><a class="nav-link" target="_blank" href="https://www.linkedin.com/in/hamoutni/"><i class="fa-brands fa-linkedin-in" style="margin-top:7px;"></i></a></li>
+        <li class="nav-item"><a class="nav-link" target="_blank" href="https://www.kaggle.com/anashamoutni"><i class="fab fa-kaggle"></i></a></li>
+        <li class="nav-item"><a class="nav-link" target="_blank" href="https://github.com/AnasHamoutni"><i class="fab fa-github" style="margin-top:7px;"></i></a></li>
+        <li class="nav-item"><a class="nav-link" target="_blank" href="https://x.com/anashamoutni"><i class="fab fa-x-twitter" style="margin-top:7px;"></i></a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="blogPost-div">
+    <img class="imgPost" loading="lazy"
+         src="Top-10-Machine-Learning-Algorithms.png"
+         alt="Top 10 Machine Learning Algorithms — illustration" />
+    <div class="blogPost-title-div">
+      <h2 class="blogPost-title">Top 10 Machine Learning Algorithms Explained — Intuition, Math, Code, and Use Cases</h2>
+    </div>
+
+    <!-- ARTICLE -->
+    <div class="postBody-div">
+
+      <!-- ABSTRACT -->
+      <p><em>Choosing the right algorithm is half the battle in machine learning. This gently technical deep dive explains the <span class="highlight"><a href="https://en.wikipedia.org/wiki/Machine_learning" target="_blank">Top 10 ML algorithms</a></span> with plain-English intuition, key equations, <span class="highlight">Python</span> snippets, and realistic use cases. We also add ensembles like <span class="highlight">XGBoost/AdaBoost</span>, common pitfalls, a mini history, and interview questions—so beginners can follow, and practitioners still learn something new.</em></p>
+
+      <!-- TOC -->
+      <div class="note toc">
+        <strong>Contents</strong> —
+        <a href="#intro">Why these 10?</a> ·
+        <a href="#linear">1) Linear Regression</a> ·
+        <a href="#logistic">2) Logistic Regression</a> ·
+        <a href="#tree">3) Decision Trees</a> ·
+        <a href="#rf">4) Random Forests</a> ·
+        <a href="#svm">5) Support Vector Machines</a> ·
+        <a href="#knn">6) k-Nearest Neighbors</a> ·
+        <a href="#nb">7) Naive Bayes</a> ·
+        <a href="#kmeans">8) k-Means</a> ·
+        <a href="#pca">9) PCA</a> ·
+        <a href="#nn">10) Neural Networks</a> ·
+        <a href="#ensembles">Bonus: Ensembles (XGBoost, AdaBoost, GBoost)</a> ·
+        <a href="#history">Mini History & Trends</a> ·
+        <a href="#interview">Interview Q&A</a> ·
+        <a href="#faq">FAQ</a>
+      </div>
+
+      <center><hr width="50%" class="solid" /></center>
+      <h3 id="intro" style="color:blue;margin-top:35px;margin-bottom:30px;">Why these 10? (and how to pick fast)</h3>
+      <center><hr width="50%" class="solid" /></center>
+
+      <p><b>Plain English.</b> The algorithms below are the most reused across analytics, data products, and ML engineering. They’re battle-tested, well-understood, and widely implemented. Learn these first, then specialize.</p>
+      <div class="tip mini">
+        <b>Quick chooser.</b> Numeric prediction? ➜ Linear regression or tree-based ensembles. Binary labels? ➜ Logistic regression / SVM / Random Forest / XGBoost. Many classes? ➜ Multinomial logistic, Random Forest, or LightGBM/XGBoost. Unlabeled data? ➜ k-Means, PCA. Small data with strong priors? ➜ Naive Bayes. Nonlinear vision/audio/NLP? ➜ Neural nets.
+      </div>
+
+      <div class="table-wrapper">
+        <table class="alg-table">
+          <thead>
+          <tr>
+            <th>Algorithm</th>
+            <th>Type</th>
+            <th>Strength</th>
+            <th>Watch out for</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr><td>Linear Regression</td><td>Supervised (regression)</td><td>Fast, interpretable coefficients</td><td>Outliers, multicollinearity</td></tr>
+          <tr><td>Logistic Regression</td><td>Supervised (classification)</td><td>Calibrated probs, simple baseline</td><td>Nonlinear boundaries</td></tr>
+          <tr><td>Decision Tree</td><td>Supervised</td><td>Human-readable rules</td><td>Overfitting without pruning</td></tr>
+          <tr><td>Random Forest</td><td>Supervised (ensemble)</td><td>Strong baseline, robust</td><td>Less interpretable than single tree</td></tr>
+          <tr><td>SVM</td><td>Supervised</td><td>Clear margins; kernels for nonlinearity</td><td>Scaling, kernel tuning</td></tr>
+          <tr><td>k-NN</td><td>Supervised (lazy)</td><td>Simple, nonparametric</td><td>Curse of dimensionality</td></tr>
+          <tr><td>Naive Bayes</td><td>Supervised (probabilistic)</td><td>Fast, decent text baseline</td><td>Feature independence assumption</td></tr>
+          <tr><td>k-Means</td><td>Unsupervised (clustering)</td><td>Fast, widely used</td><td>Spherical clusters; init sensitivity</td></tr>
+          <tr><td>PCA</td><td>Unsupervised (DR)</td><td>Noise reduction, visualization</td><td>Linear components only</td></tr>
+          <tr><td>Neural Networks</td><td>Supervised / self-supervised</td><td>State-of-the-art representation learning</td><td>Compute, data, tuning</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 1) Linear Regression -->
+      <center><hr width="50%" class="solid" /></center>
+      <h3 id="linear" style="color:blue;margin-top:35px;margin-bottom:30px;">1) Linear Regression</h3>
+      <center><hr width="50%" class="solid" /></center>
+
+      <p><b>Intuition.</b> Predict a number as a weighted sum of features. Like mixing sliders on a soundboard: each feature’s coefficient says how much it nudges the prediction.</p>
+      <div class="math-equation">$$\hat{y} = \beta_0 + \sum_{j=1}^p \beta_j x_j \quad,\quad
+        \hat{\boldsymbol{\beta}} = \arg\min_{\boldsymbol{\beta}} \| \mathbf{y}-\mathbf{X}\boldsymbol{\beta}\|_2^2
+      $$</div>
+      <p class="mini"><b>Closed form (OLS):</b> \(\hat{\boldsymbol{\beta}}=(X^\top X)^{-1}X^\top y\). In practice, prefer numerically stable solvers (QR/SVD) or gradient methods.</p>
+
+      <div class="tip mini"><b>Use cases.</b> Price prediction (housing), demand forecasting, trend modeling. <b>Pitfalls:</b> outliers (try robust regression), multicollinearity (use regularization or drop redundant features).</div>
+
+      <pre><code class="language-python"># Linear Regression with scikit-learn
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score, mean_squared_error
+
+rng = np.random.default_rng(0)
+X = rng.normal(size=(200, 3))
+true_beta = np.array([2.0, -1.0, 0.5])
+y = 1.3 + X @ true_beta + rng.normal(scale=0.5, size=200)
+
+model = LinearRegression().fit(X, y)
+y_pred = model.predict(X)
+print("Coefficients:", model.coef_)
+print("R^2:", r2_score(y, y_pred), "RMSE:", mean_squared_error(y, y_pred, squared=False))</code></pre>
+
+      <!-- 2) Logistic Regression -->
+      <center><hr width="50%" class="solid" /></center>
+      <h3 id="logistic" style="color:blue;margin-top:35px;margin-bottom:30px;">2) Logistic Regression</h3>
+      <center><hr width="50%" class="solid" /></center>
+
+      <p><b>Intuition.</b> Linear scores passed through a <a href="https://en.wikipedia.org/wiki/Logistic_function" class="highlight" target="_blank">sigmoid</a> give probabilities for binary outcomes.</p>
+      <div class="math-equation">$$
+        P(y=1\mid \mathbf{x})=\sigma(\beta_0+\mathbf{x}^\top\boldsymbol{\beta})
+        \quad,\quad
+        \sigma(z)=\frac{1}{1+e^{-z}}
+      $$</div>
+      <p class="mini"><b>Loss:</b> negative log-likelihood (a.k.a. logistic loss). Regularization (L2/L1) helps avoid overfitting, improves conditioning.</p>
+
+      <div class="tip mini"><b>Use cases.</b> Fraud detection, churn prediction, click-through rate. <b>Pitfalls:</b> nonlinear boundaries (add interactions, polynomials, or switch to trees/kernels).</div>
+
+      <pre><code class="language-python"># Logistic Regression
+from sklearn.datasets import make_classification
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score
+
+X, y = make_classification(n_samples=800, n_features=8, random_state=0)
+clf = LogisticRegression(max_iter=1000).fit(X, y)
+p = clf.predict_proba(X)[:,1]
+print("AUC:", roc_auc_score(y, p))</code></pre>
+
+      <!-- 3) Decision Trees -->
+      <center><hr width="50%" class="solid" /></center>
+      <h3 id="tree" style="color:blue;margin-top:35px;margin-bottom:30px;">3) Decision Trees</h3>
+      <center><hr width="50%" class="solid" /></center>
+
+      <p><b>Intuition.</b> Split the feature space into rectangles by asking yes/no questions (“Is price &lt; 250k?”). Leaves are predictions; paths are human-readable rules.</p>
+      <div class="math-equation">$$
+        \text{Gini}(S)=1-\sum_k p_k^2,\quad
+        \text{Entropy}(S)=-\sum_k p_k \log p_k
+      $$</div>
+      <p class="mini">Pick the split that reduces impurity the most. <b>Risk:</b> overfitting—mitigate via max depth, min samples, cost-complexity pruning.</p>
+
+      <pre><code class="language-python"># Decision Tree
+from sklearn.tree import DecisionTreeClassifier, export_text
+tree = DecisionTreeClassifier(max_depth=4, random_state=0).fit(X, y)
+print(export_text(tree, feature_names=[f"x{i}" for i in range(X.shape[1])]))</code></pre>
+
+      <!-- 4) Random Forests -->
+      <center><hr width="50%" class="solid" /></center>
+      <h3 id="rf" style="color:blue;margin-top:35px;margin-bottom:30px;">4) Random Forests</h3>
+      <center><hr width="50%" class="solid" /></center>
+
+      <p><b>Intuition.</b> Many de-correlated trees vote together. Bagging reduces variance; random feature selection further de-correlates trees.</p>
+      <div class="tip mini"><b>Use cases.</b> Tabular data default. Good with messy, nonlinear signals. <b>Extras:</b> out-of-bag (OOB) score approximates validation; feature importances for interpretability.</div>
+
+      <pre><code class="language-python"># Random Forest
+from sklearn.ensemble import RandomForestClassifier
+rf = RandomForestClassifier(n_estimators=300, oob_score=True, random_state=0).fit(X, y)
+print("OOB score:", rf.oob_score_)</code></pre>
+
+      <!-- 5) SVM -->
+      <center><hr width="50%" class="solid" /></center>
+      <h3 id="svm" style="color:blue;margin-top:35px;margin-bottom:30px;">5) Support Vector Machines</h3>
+      <center><hr width="50%" class="solid" /></center>
+
+      <p><b>Intuition.</b> Find the separating hyperplane with the largest margin. With kernels, implicitly map data to a space where separation is easier.</p>
+      <div class="math-equation">$$
+        \min_{\mathbf{w},b}\ \frac{1}{2}\|\mathbf{w}\|^2 + C\sum_i \xi_i,\;\;
+        \text{s.t. } y_i(\mathbf{w}^\top\phi(\mathbf{x}_i)+b)\ge 1-\xi_i,\;\xi_i\ge 0
+      $$</div>
+      <p class="mini"><b>Tips:</b> scale features; tune \(C\) and kernel parameters (e.g., RBF \(\gamma\)). Works well on moderate-sized datasets.</p>
+
+      <pre><code class="language-python"># SVM (RBF)
+from sklearn.svm import SVC
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+
+svm = make_pipeline(StandardScaler(), SVC(kernel="rbf", C=2.0, gamma="scale", probability=True))
+svm.fit(X, y)</code></pre>
+
+      <!-- 6) k-NN -->
+      <center><hr width="50%" class="solid" /></center>
+      <h3 id="knn" style="color:blue;margin-top:35px;margin-bottom:30px;">6) k-Nearest Neighbors</h3>
+      <center><hr width="50%" class="solid" /></center>
+
+      <p><b>Intuition.</b> “You are who your neighbors are.” Classification or regression from the average of the k closest points in feature space.</p>
+      <div class="warn mini"><b>Curse of dimensionality.</b> In high dimensions, distance loses meaning; reduce dimensions (PCA) or use learned embeddings.</div>
+
+      <pre><code class="language-python"># k-NN
+from sklearn.neighbors import KNeighborsClassifier
+knn = KNeighborsClassifier(n_neighbors=7, weights="distance").fit(X, y)</code></pre>
+
+      <!-- 7) Naive Bayes -->
+      <center><hr width="50%" class="solid" /></center>
+      <h3 id="nb" style="color:blue;margin-top:35px;margin-bottom:30px;">7) Naive Bayes</h3>
+      <center><hr width="50%" class="solid" /></center>
+
+      <p><b>Intuition.</b> Apply Bayes’ rule with a strong independence assumption to get simple, fast probabilistic classifiers—great for text.</p>
+      <div class="math-equation">$$
+        P(y\mid \mathbf{x}) \propto P(y)\prod_j P(x_j\mid y)
+      $$</div>
+      <p class="mini"><b>Types:</b> Gaussian, Multinomial, Bernoulli. <b>Use cases:</b> spam filtering, quick baselines for NLP. <b>Watch:</b> correlated features break the assumption.</p>
+
+      <pre><code class="language-python"># Multinomial Naive Bayes (text-like)
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.feature_extraction.text import CountVectorizer
+
+docs = ["great service", "bad product", "excellent quality", "terrible experience"]
+y_text = [1, 0, 1, 0]
+vec = CountVectorizer().fit(docs)
+X_text = vec.transform(docs)
+
+nb = MultinomialNB().fit(X_text, y_text)</code></pre>
+
+      <!-- 8) k-Means -->
+      <center><hr width="50%" class="solid" /></center>
+      <h3 id="kmeans" style="color:blue;margin-top:35px;margin-bottom:30px;">8) k-Means Clustering</h3>
+      <center><hr width="50%" class="solid" /></center>
+
+      <p><b>Intuition.</b> Repeatedly assign points to the nearest centroid, then recompute centroids. Finds compact, spherical-ish clusters.</p>
+      <div class="math-equation">$$
+        \min_{\{\mathcal{C}_k\},\{\boldsymbol{\mu}_k\}} \sum_{k=1}^{K}\sum_{\mathbf{x}\in\mathcal{C}_k}\|\mathbf{x}-\boldsymbol{\mu}_k\|_2^2
+      $$</div>
+      <p class="mini"><b>Tips:</b> standardize features; try different \(K\) (elbow, silhouette); use <span class="highlight">k-means++</span> init.</p>
+
+      <pre><code class="language-python"># k-Means
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+
+km = KMeans(n_clusters=4, init="k-means++", random_state=0).fit(X)
+labels = km.labels_
+print("Silhouette:", silhouette_score(X, labels))</code></pre>
+
+      <!-- 9) PCA -->
+      <center><hr width="50%" class="solid" /></center>
+      <h3 id="pca" style="color:blue;margin-top:35px;margin-bottom:30px;">9) Principal Component Analysis (PCA)</h3>
+      <center><hr width="50%" class="solid" /></center>
+
+      <p><b>Intuition.</b> Rotate the data to directions of maximum variance; keep only the top components to compress noise while preserving structure.</p>
+      <div class="math-equation">$$
+        X = U\Sigma V^\top,\quad \text{Top-}r\text{ projection: } X_r = X V_r V_r^\top
+      $$</div>
+      <p class="mini"><b>Use cases:</b> visualization (2D/3D), preprocessing, denoising. <b>Note:</b> linear method—nonlinear structure may need t-SNE/UMAP/kPCA.</p>
+
+      <pre><code class="language-python"># PCA
+from sklearn.decomposition import PCA
+pca = PCA(n_components=2).fit(X)
+Z = pca.transform(X)
+print("Explained variance ratio:", pca.explained_variance_ratio_)</code></pre>
+
+      <!-- 10) Neural Networks -->
+      <center><hr width="50%" class="solid" /></center>
+      <h3 id="nn" style="color:blue;margin-top:35px;margin-bottom:30px;">10) Neural Networks (MLP → CNNs → Transformers)</h3>
+      <center><hr width="50%" class="solid" /></center>
+
+      <p><b>Intuition.</b> Stack layers of linear transforms + nonlinear activations to learn flexible functions. Depth and width control capacity.</p>
+      <div class="math-equation">$$
+        \mathbf{h}^{(l)} = \sigma\!\left(W^{(l)}\mathbf{h}^{(l-1)} + \mathbf{b}^{(l)}\right),\;
+        \hat{y} = f_\Theta(\mathbf{x})
+      $$</div>
+      <p class="mini"><b>Use cases:</b> images (CNNs), sequences (RNNs/LSTMs), language (<a class="highlight" href="https://en.wikipedia.org/wiki/Transformer_(machine_learning_model)" target="_blank">Transformers</a>). <b>Needs:</b> data, compute, regularization (dropout, weight decay), good optimization (AdamW, schedulers).</p>
+
+      <pre><code class="language-python"># Minimal MLP in PyTorch
+import torch, torch.nn as nn, torch.optim as optim
+class MLP(nn.Module):
+    def __init__(self, d_in, d_h, d_out):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(d_in, d_h), nn.ReLU(),
+            nn.Linear(d_h, d_out)
+        )
+    def forward(self, x): return self.net(x)
+
+X_t = torch.tensor(X, dtype=torch.float32)
+y_t = torch.tensor(y, dtype=torch.float32).view(-1,1)
+mlp = MLP(d_in=X.shape[1], d_h=64, d_out=1)
+opt = optim.AdamW(mlp.parameters(), lr=1e-3, weight_decay=1e-2)
+loss_fn = nn.MSELoss()
+
+for _ in range(400):
+    opt.zero_grad()
+    pred = mlp(X_t)
+    loss = loss_fn(pred, y_t)
+    loss.backward(); opt.step()</code></pre>
+
+      <!-- Bonus Ensembles -->
+      <center><hr width="50%" class="solid" /></center>
+      <h3 id="ensembles" style="color:blue;margin-top:35px;margin-bottom:30px;">Bonus: Ensembles (XGBoost, AdaBoost, Gradient Boosting)</h3>
+      <center><hr width="50%" class="solid" /></center>
+
+      <p><b>Why ensembles win.</b> Combine many weak learners (typically shallow trees) to get a strong learner. Boosting adds models sequentially, focusing on previous mistakes.</p>
+
+      <h4 style="color:blue;">AdaBoost (Adaptive Boosting)</h4>
+      <p class="mini">Reweights samples: misclassified points get higher weights. Final prediction is a weighted vote.</p>
+      <div class="math-equation">$$
+        F_{t}(\mathbf{x}) = F_{t-1}(\mathbf{x}) + \alpha_t h_t(\mathbf{x}),\quad
+        \alpha_t \propto \log\frac{1-\epsilon_t}{\epsilon_t}
+      $$</div>
+
+      <h4 style="color:blue;">Gradient Boosting (incl. XGBoost/LightGBM)</h4>
+      <p class="mini">Fit the next tree to the negative gradient of the loss w.r.t. current predictions (i.e., to residuals). Regularization (shrinkage, subsampling) prevents overfitting.</p>
+      <div class="math-equation">$$
+        F_{t}(\mathbf{x}) = F_{t-1}(\mathbf{x}) + \eta \cdot h_t(\mathbf{x})
+      $$</div>
+
+      <pre><code class="language-python"># Gradient Boosting / XGBoost-like (scikit-learn)
+from sklearn.ensemble import GradientBoostingClassifier
+gb = GradientBoostingClassifier(n_estimators=300, learning_rate=0.05, max_depth=3, random_state=0).fit(X, y)</code></pre>
+
+      <div class="tip mini"><b>Use cases.</b> Tabular, structured data, winning many Kaggle comps. <b>Tips:</b> tune learning_rate, n_estimators, max_depth; use early stopping with validation.</div>
+
+      <!-- Visual & Video -->
+      <div class="image-container">
+        <img src="Boosting-Residuals-Diagram.png" alt="Boosting fits residuals stage by stage" class="responsive-image" />
+        <div class="mini" style="margin-top:6px;">Figure: Boosting learns by fitting residuals (negative gradients) iteratively.</div>
+      </div>
+
+      <div class="video-container" style="width:95%;margin:0 auto;">
+        <iframe src="https://www.youtube.com/embed/3CC4N4z3GJc"
+                title="Gradient Boosting and XGBoost — Gentle Explanation"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+      </div>
+      <br />
+
+      <!-- Mini History -->
+      <center><hr width="50%" class="solid" /></center>
+      <h3 id="history" style="color:blue;margin-top:35px;margin-bottom:30px;">Mini History & Trends</h3>
+      <center><hr width="50%" class="solid" /></center>
+
+      <p><b>Then → Now.</b> We went from early statistical models (linear/logistic regression), to tree-based methods and kernels (SVM), to ensemble dominance (Random Forest, boosting), and now to representation learning with <a class="highlight" href="https://en.wikipedia.org/wiki/Deep_learning" target="_blank">deep learning</a> and Transformers handling images, speech, and language. On tabular data, boosting remains a strong baseline; on perceptual tasks, deep nets are king; and for interpretability, linear models and trees still shine.</p>
+
+      <!-- Interview Q&A -->
+      <center><hr width="50%" class="solid" /></center>
+      <h3 id="interview" style="color:blue;margin-top:35px;margin-bottom:30px;">Interview-Style Questions (with short answers)</h3>
+      <center><hr width="50%" class="solid" /></center>
+
+      <ol>
+        <li><b>Q:</b> Why prefer Logistic Regression over SVM sometimes? <b>A:</b> Calibrated probabilities, simpler/faster baseline, easier to interpret coefficients.</li>
+        <li><b>Q:</b> Gini vs Entropy in trees? <b>A:</b> Both measure impurity; Gini is slightly faster; they usually choose similar splits.</li>
+        <li><b>Q:</b> When does k-NN fail? <b>A:</b> High dimensions (distances become uninformative), unscaled features, large datasets (slow lookup).</li>
+        <li><b>Q:</b> PCA vs t-SNE? <b>A:</b> PCA is linear, fast, preserves global variance; t-SNE is nonlinear, good for 2D cluster visualization but distorts global structure.</li>
+        <li><b>Q:</b> Why are ensembles strong? <b>A:</b> Averaging reduces variance; boosting reduces bias by focusing on errors.</li>
+      </ol>
+
+      <!-- Diagnostics -->
+      <center><hr width="50%" class="solid" /></center>
+      <h3 style="color:blue;margin-top:35px;margin-bottom:30px;">Common Pitfalls & Diagnostics</h3>
+      <center><hr width="50%" class="solid" /></center>
+
+      <ul class="checklist">
+        <li><b>Data leakage:</b> Don’t compute scalers/PCA on full data. Fit on train only; apply to validation/test.</li>
+        <li><b>Imbalanced classes:</b> Use stratified CV, class weights, threshold tuning, PR-AUC, and focal/weighted losses.</li>
+        <li><b>Overfitting trees:</b> Restrict depth, min samples; use ensembles with regularization.</li>
+        <li><b>Poor scaling:</b> Standardize for SVM/k-NN/PCA/logistic; trees/forests don’t require scaling.</li>
+        <li><b>Bad metrics:</b> Accuracy is misleading on imbalance; prefer ROC-AUC/PR-AUC/F1, MCC, calibration.</li>
+      </ul>
+
+      <!-- Practical Cheatsheet -->
+      <div class="boxed mini">
+        <b>Cheatsheet:</b>
+        <ul>
+          <li>Tabular baseline: <b>Random Forest</b> or <b>Gradient Boosting</b> (+ simple feature engineering).</li>
+          <li>Need probabilities & interpretability: <b>Logistic Regression</b> with regularization + calibration.</li>
+          <li>Small data, nonlinear boundary: <b>SVM</b> (RBF), after scaling.</li>
+          <li>Clustering customers: <b>k-Means</b> after standardization; validate with <b>silhouette</b>.</li>
+          <li>Dimensionality/tSNE plots: <b>PCA → t-SNE/UMAP</b>.</li>
+          <li>Images/text/audio: <b>Neural Networks</b>; start with pretrained models.</li>
+        </ul>
+      </div>
+
+      <!-- References -->
+      <center><hr width="50%" class="solid" /></center>
+      <h3 style="color:blue;margin-top:35px;margin-bottom:30px;">References & Further Reading</h3>
+      <center><hr width="50%" class="solid" /></center>
+      <ol>
+        <li><a target="_blank" href="https://en.wikipedia.org/wiki/Machine_learning">Machine learning — Wikipedia</a></li>
+        <li><a target="_blank" href="https://scikit-learn.org/stable/">scikit-learn User Guide</a> (great API docs + tutorials)</li>
+        <li>Hastie, Tibshirani, Friedman. <em>The Elements of Statistical Learning</em>.</li>
+        <li>Goodfellow, Bengio, Courville. <em>Deep Learning</em>.</li>
+        <li>Breiman, L. “Random Forests.” <em>Machine Learning</em> (2001).</li>
+        <li>Friedman, J. “Greedy Function Approximation: A Gradient Boosting Machine.” (2001).</li>
+      </ol>
+
+    </div> <!-- /postBody-div -->
+  </div> <!-- /blogPost-div -->
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="waves">
+      <div class="wave" id="wave1"></div>
+      <div class="wave" id="wave2"></div>
+      <div class="wave" id="wave3"></div>
+    </div>
+    <div class="footer-elem-container">
+      <ul class="social-icon">
+        <li class="social-icon__item"><a class="social-icon__link" href="https://www.linkedin.com/in/hamoutni/" target="_blank"><ion-icon name="logo-linkedIn"></ion-icon></a></li>
+        <li class="social-icon__item"><a class="social-icon__link" href="https://www.kaggle.com/AnasHamoutni" target="_blank"><i class="fab fa-kaggle foote"></i></a></li>
+        <li class="social-icon__item"><a class="social-icon__link" href="https://github.com/AnasHamoutni" target="_blank"><ion-icon name="logo-github"></ion-icon></a></li>
+        <li class="social-icon__item"><a class="social-icon__link" href="https://x.com/AnasHamoutni" target="_blank">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 462.799" width="32" height="32" style="vertical-align:baseline;">
+            <path fill="#fff" fill-rule="nonzero" d="M403.229 0h78.506L310.219 196.04 512 462.799H354.002L230.261 301.007 88.669 462.799h-78.56l183.455-209.683L0 0h161.999l111.856 147.88L403.229 0zm-27.556 415.805h43.505L138.363 44.527h-46.68l283.99 371.278z"/>
+          </svg>
+        </a></li>
+      </ul>
+      <ul class="menu">
+        <li class="menu__item"><a class="menu__link" href="/index.html">Home</a></li>
+        <li class="menu__item"><a class="menu__link" href="/Projects.html">Projects</a></li>
+        <li class="menu__item"><a class="menu__link" href="/About-me.html">About me</a></li>
+        <li class="menu__item"><a class="menu__link" href="/Blog.html">Blog</a></li>
+        <li class="menu__item"><a class="menu__link" href="/Get-in-Touch.html">Get in Touch</a></li>
+        <li class="menu__item"><a class="menu__link" href="/Privacy-Policy.html">Privacy Policy</a></li>
+        <li class="menu__item"><a class="menu__link" href="/Terms-of-Service.html">Terms of Service</a></li>
+        <li class="menu__item"><a class="menu__link" href="/Cookie-Policy.html">Cookie Policy</a></li>
+      </ul>
+      <div class="p-foot-div">
+        <p>&copy;2025 Kudos AI • by Anas HAMOUTNI • All Rights Reserved</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" defer crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <script src='https://kit.fontawesome.com/d25a67fa19.js' crossorigin='anonymous' defer></script>
+  <script src="/index.js" defer></script>
+</body>
+</html>

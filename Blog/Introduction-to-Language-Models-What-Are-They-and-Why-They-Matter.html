@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Kudos AI | Blog | Introduction to Language Models: What Are They and Why They Matter</title>
+<meta name="description"
+      content="A beginner-friendly yet technically deep guide to Language Models: from n-grams to neural networks, word embeddings, RNNs, LSTMs, Transformers, GPT, BERT, pre-training, fine-tuning, transfer learning, with equations, NumPy & PyTorch code, visuals, and a high-quality explainer video." />
+<meta name="keywords"
+      content="language models, NLP, n-grams, word embeddings, RNN, LSTM, GRU, transformer, BERT, GPT, pre-training, fine-tuning, transfer learning, HuggingFace, PyTorch, NumPy, deep learning, AI, beginner friendly" />
+
+    <!-- Template CSS & icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="/styles.css"/>
+
+    <!-- Code highlighting (matches your other articles) -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VCL644R1SZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-VCL644R1SZ');
+    </script>
+    <link rel="icon" type="image/x-icon" href="/Kudos_AI_favicon.png" />
+
+    <!-- MathJax for equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script"
+            async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+
+    <style>
+      /* Keep your look & readability */
+      .highlight{color:#007bff;font-weight:bold;}
+      p{margin-bottom:1em;}
+      h3{text-align:center;}
+      h4{text-align:left;}
+
+      /* Gentle callouts to help beginners */
+      .note{background:#eef7ff;border-left:4px solid #007bff;padding:10px;border-radius:4px;margin:14px 0;}
+      .tip {background:#fff7e6;border-left:4px solid #ffbf00;padding:10px;border-radius:4px;margin:14px 0;}
+      .warn{background:#ffecec;border-left:4px solid #ff4d4f;padding:10px;border-radius:4px;margin:14px 0;}
+      .mini{font-size:.95em;color:#444;}
+      .toc a{color:#007bff;text-decoration:none;}
+      .toc a:hover{text-decoration:underline;}
+
+      /* Prevent truncation on small screens */
+      pre{background:#f8f9fa;border:1px solid #ddd;padding:10px;border-radius:5px;overflow:auto;}
+      pre code{white-space:pre;}
+      .scroll-x{overflow-x:auto;}
+      .math-equation{
+        font-family:"Courier New",monospace;
+        display:block;
+        margin:10px auto;
+        padding:4px 0;
+        max-width:100%;
+        white-space:nowrap; /* allow horizontal scroll */
+      }
+
+      /* Video and images */
+      .video-container{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;background:#000;margin:0 auto;border-radius:12px;}
+      .video-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:12px;}
+      .image-container{text-align:center;margin:20px 0;}
+      .responsive-image{max-width:100%;height:auto;display:inline-block;border-radius:8px;}
+
+      /* Boxed equations/defs */
+      .boxed{border:1px solid #007bff;border-radius:6px;padding:8px 12px;background:#eef7ff;margin:14px 0;}
+      .checklist li{margin-bottom:.4em;}
+    </style>
+  </head>
+
+  <body>
+    <!-- ---------- NAVBAR ---------- -->
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color:white;">
+      <a class="navbar-brand" href="/index.html">
+        <img width="180" src="/Kudos_AI_logo_transparent.png" alt="Kudos AI Logo">
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNavbarToggler10"
+              aria-controls="myNavbarToggler10" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="myNavbarToggler10">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item"><a class="nav-link" href="/index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Projects.html">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="/About-me.html">About me</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Blog.html">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Get-in-Touch.html">Get in Touch</a></li>
+        </ul>
+        <ul class="navbar-nav sm-icons mr-0 d-flex justify-content-center">
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://www.linkedin.com/in/hamoutni/"><i class="fa-brands fa-linkedin-in" style="margin-top:7px;"></i></a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://www.kaggle.com/anashamoutni"><i class="fab fa-kaggle"></i></a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://github.com/AnasHamoutni"><i class="fab fa-github" style="margin-top:7px;"></i></a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://x.com/anashamoutni"><i class="fab fa-x-twitter" style="margin-top:7px;"></i></a></li>
+        </ul>
+      </div>
+    </nav>
+
+      <!-- ---------- MAIN ARTICLE BODY ---------- -->
+<div class="blogPost-div">
+
+<img class="imgPost" loading="lazy" src="Introduction-to-Language-Models-What-Are-They-and-Why-They-Matter.jpg" alt="Introduction to Language Models" />
+<div class="blogPost-title-div"><h2 class="blogPost-title">Introduction to Language Models: What Are They and Why They Matter</h2></div>
+<div class="postBody-div">
+<p><span class="highlight"><a href="https://en.wikipedia.org/wiki/Language_model" target="_blank">Language models</a></span> have become a cornerstone of modern natural language processing (<span class="highlight"><a href="https://en.wikipedia.org/wiki/Natural_language_processing" target="_blank">NLP</a></span>) applications. They form the foundation of various AI-driven technologies, enabling machines to understand, generate, and manipulate human language. From simple text completion tasks to complex conversational agents like <span class="highlight"><a href="https://en.wikipedia.org/wiki/GPT-3" target="_blank">GPT-3</a></span>, language models are revolutionizing how machines interact with human language.</p>
+
+<center><hr align="center" width="50%" class="solid"></center><h3 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">What Is a Language Model?</h3><center><hr align="center" width="50%" class="solid"></center>
+<p>A <span class="highlight">language model</span> is a probabilistic framework that predicts the likelihood of a sequence of words. The central idea is to compute the probability of a word given the previous words in a sentence. Mathematically, for a sequence of words \( w_1, w_2, \ldots, w_n \), the language model estimates the joint probability:</p>
+
+<div class="scroll-indicator">
+<div class="math-equation">
+$$
+P(w_1, w_2, \ldots, w_n) = P(w_1) \cdot P(w_2|w_1) \cdot \ldots \cdot P(w_n|w_1, w_2, \ldots, w_{n-1})
+$$
+</div>
+</div>
+
+<p>This formulation lies at the heart of language modeling, guiding how these models generate text and understand context.</p>
+
+<h4 style="text-align:left; color:blue; margin-bottom:30px; margin-top:35px;">Types of Language Models</h4>
+
+<p>There are various types of language models, each with its specific characteristics and applications:</p>
+
+<ul>
+  <li><span class="highlight"><a href="https://en.wikipedia.org/wiki/N-gram" target="_blank">N-gram Models:</a></span> These are among the simplest language models, where the probability of a word is conditioned only on a fixed number (n) of preceding words. For example, a bigram model (n=2) considers only the previous word when predicting the next. While easy to implement and efficient, n-gram models struggle with long-range dependencies and data sparsity.</li>
+
+  <li><span class="highlight">Statistical Language Models:</span> These include more advanced probabilistic models that leverage large datasets to capture more complex dependencies. Examples include Hidden Markov Models (<span class="highlight">HMMs</span>) and Conditional Random Fields (<span class="highlight">CRFs</span>). These models are foundational in speech recognition and traditional NLP applications but are now often outperformed by neural networks.</li>
+
+  <li><span class="highlight">Neural Language Models:</span> With the rise of deep learning, neural networks became popular for language modeling. Recurrent Neural Networks (<span class="highlight">RNNs</span>), Long Short-Term Memory (<span class="highlight">LSTM</span>) networks, and Gated Recurrent Units (<span class="highlight">GRUs</span>) are examples of neural architectures that can capture temporal dependencies and handle sequences of varying lengths. These models significantly improve the ability to model long-range dependencies but still suffer from limitations like vanishing gradients (Jurafsky & Martin, 2020).</li>
+
+  <li><span class="highlight">Transformer Models:</span> The introduction of the Transformer architecture revolutionized NLP by addressing the limitations of RNNs. Transformers use self-attention mechanisms to process entire sequences in parallel, making them highly efficient and capable of capturing global context. The Transformer model is the foundation of state-of-the-art language models like <span class="highlight">GPT</span>, <span class="highlight">BERT</span>, and <span class="highlight">T5</span> (Vaswani et al., 2017).</li>
+</ul>
+
+<center><hr align="center" width="50%" class="solid"></center><h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">The Importance of Language Models</h4><center><hr align="center" width="50%" class="solid"></center>
+<p>Language models are crucial because they enable machines to handle a wide range of tasks that require language understanding. They power applications like machine translation, sentiment analysis, text summarization, and more. By learning patterns and structures in large text corpora, these models can generate human-like text, answer questions, and even engage in meaningful conversations.</p>
+
+<p>In recent years, the importance of language models has grown with the advent of deep learning and transformers. These advancements have pushed the boundaries of what language models can achieve, leading to more accurate and sophisticated NLP systems (Tunstall, et al., 2022).</p>
+
+<h4 style="text-align:left; color:blue; margin-bottom:30px; margin-top:35px;">Real-World Applications of Language Models</h4>
+
+<p>Language models have found applications in various fields, transforming how we interact with technology:</p>
+
+<ul>
+  <li><span class="highlight">Machine Translation:</span> Language models are at the core of machine translation systems, enabling accurate translation of text between different languages. For example, models like Google's Neural Machine Translation (<span class="highlight">GNMT</span>) and OpenAI's <span class="highlight">GPT-3</span> are used to translate text with high accuracy and fluency.</li>
+
+  <li><span class="highlight">Speech Recognition:</span> Automatic speech recognition (<span class="highlight">ASR</span>) systems rely on language models to transcribe spoken language into text. These models predict the most likely words based on the audio input, improving the accuracy of transcription services like Apple's <span class="highlight">Siri</span> and Google's <span class="highlight">Assistant</span>.</li>
+
+  <li><span class="highlight">Text Generation:</span> Language models can generate coherent and contextually relevant text, making them useful in applications like content creation, automated summarization, and even creative writing. For instance, OpenAI's <span class="highlight">GPT-3</span> can generate entire articles, stories, and code snippets based on a given prompt.</li>
+
+  <li><span class="highlight">Sentiment Analysis:</span> Sentiment analysis tools use language models to determine the sentiment behind a piece of text, such as identifying whether a tweet expresses positive, negative, or neutral feelings. This capability is widely used in social media monitoring and customer feedback analysis.</li>
+
+  <li><span class="highlight">Question Answering:</span> Advanced language models power question-answering systems, which can understand and respond to user queries in natural language. These systems are used in customer service bots, virtual assistants, and search engines like Google's BERT-powered search algorithm (Vaswani et al., 2017).</li>
+</ul>
+
+<center><hr align="center" width="50%" class="solid"></center><h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">Historical Context</h4><center><hr align="center" width="50%" class="solid"></center>
+<p>The development of language models can be traced back to the early days of computational linguistics. Early models, such as the <span class="highlight">n-gram models</span>, were simple yet effective in capturing the probability of word sequences based on a fixed window of preceding words. However, these models had limitations, particularly in handling long-range dependencies.</p>
+
+<h4 style="text-align:left; color:blue; margin-bottom:30px; margin-top:35px;">The Evolution of Language Models</h4>
+
+<ul>
+  <li><span class="highlight">N-gram Models:</span> The earliest language models were based on n-grams, where the probability of a word is conditioned on a fixed number of preceding words. N-grams are straightforward and computationally efficient but suffer from the curse of dimensionality, where the model requires exponentially more data as the value of n increases.</li>
+
+  <li><span class="highlight">Statistical Methods:</span> The introduction of statistical methods, such as Hidden Markov Models (HMMs), allowed for more sophisticated language modeling. HMMs were particularly effective in speech recognition and part-of-speech tagging tasks. However, these models still struggled with capturing the full context of a sentence due to their reliance on Markov assumptions (Jurafsky & Martin, 2020).</li>
+
+  <li><span class="highlight">Neural Networks:</span> The advent of neural networks brought significant advancements in language modeling. Recurrent Neural Networks (RNNs) and their variants, such as Long Short-Term Memory (LSTM) networks, addressed some of the challenges of n-gram models by maintaining a memory of previous inputs over time. These models are capable of capturing dependencies across longer sequences, making them more effective for tasks like machine translation.</li>
+
+  <li><span class="highlight">Transformers:</span> The introduction of the Transformer architecture by Vaswani et al. in 2017 revolutionized NLP by enabling models to process entire sequences of text simultaneously, rather than word by word. This architecture paved the way for the development of large-scale models like BERT, GPT, and T5. Transformers use self-attention mechanisms to weigh the importance of each word in a sequence, allowing them to capture global context more effectively than RNNs (Vaswani et al., 2017).</li>
+</ul>
+
+<center><hr align="center" width="50%" class="solid"></center><h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">Mathematical Foundations of Language Models</h4><center><hr align="center" width="50%" class="solid"></center>
+<p>Understanding the mathematical foundations of language models is key to appreciating their power and limitations. At the core of many language models is the concept of probability distributions over sequences of words.</p>
+
+<h4 style="text-align:left; color:blue; margin-bottom:30px; margin-top:35px;">Probability Distributions and Language Modeling</h4>
+
+<p>The probability of a word sequence \( w_1, w_2, \ldots, w_n \) is computed as the product of conditional probabilities of each word given its predecessors:</p>
+<div class="scroll-indicator">
+<div class="math-equation">
+$$
+P(w_1, w_2, \ldots, w_n) = P(w_1) \cdot P(w_2|w_1) \cdot \ldots \cdot P(w_n|w_1, w_2, \ldots, w_{n-1})
+$$
+</div>
+</div>
+<p>In practice, this approach is challenging due to the high dimensionality of the input space, especially for large vocabularies. Various techniques have been developed to address this issue, including:</p>
+
+<ul>
+  <li><span class="highlight">Smoothing Techniques:</span> To handle data sparsity, smoothing techniques like Laplace smoothing or Good-Turing discounting are applied. These techniques adjust the probability estimates for unseen word sequences, ensuring that the model can generalize better to new data.</li>
+
+  <li><span class="highlight">Neural Embeddings:</span> Neural language models often use word embeddings, which map words to dense vector representations in a continuous space. These embeddings capture semantic relationships between words, allowing the model to generalize across similar words. The embeddings are learned directly from data and form the basis of many modern language models (Jurafsky & Martin, 2020).</li>
+
+  <li><span class="highlight">Attention Mechanisms:</span> In Transformer models, attention mechanisms compute the relevance of each word in a sequence to the other words. This allows the model to focus on specific parts of the input when generating predictions, improving its ability to capture long-range dependencies and contextual information. The attention score is calculated using a scaled dot-product approach:</li>
+<div class="scroll-indicator">
+  <div class="math-equation">
+  $$
+  \text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V
+  $$
+  </div>
+</div>
+  <li>where \( Q \), \( K \), and \( V \) are the query, key, and value matrices, and \( d_k \) is the dimensionality of the key vectors (Vaswani et al., 2017).</li>
+</ul>
+
+<center><hr align="center" width="50%" class="solid"></center><h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">Language Models in the Modern Era</h4><center><hr align="center" width="50%" class="solid"></center>
+<p>Today, language models are at the forefront of AI research and applications. The advent of transformers has revolutionized NLP by enabling models to process entire sequences of text simultaneously, rather than word by word. This architecture, introduced by Vaswani et al. in 2017, paved the way for the development of large-scale models like <span class="highlight"><a href="https://en.wikipedia.org/wiki/BERT_(language_model)" target="_blank">BERT</a></span>, <span class="highlight">GPT</span>, and <span class="highlight">T5</span>.</p>
+
+<h4 style="text-align:left; color:blue; margin-bottom:30px; margin-top:35px;">Advanced Architectures and Their Impact</h4>
+
+<ul>
+  <li><span class="highlight">BERT (Bidirectional Encoder Representations from Transformers):</span> Developed by Google, BERT is a pre-trained model designed to understand the context of a word in a sentence by considering both the left and right context simultaneously. This bidirectional approach allows BERT to achieve state-of-the-art performance on a variety of NLP tasks, including question answering and sentiment analysis.</li>
+
+  <li><span class="highlight">GPT (Generative Pre-trained Transformer):</span> GPT, developed by OpenAI, is an autoregressive model that generates text by predicting the next word in a sequence based on the previous words. GPT-3, the latest version, has 175 billion parameters, making it one of the largest language models ever created. GPT-3 is capable of generating highly coherent and contextually relevant text, which has led to its use in applications ranging from chatbots to content creation.</li>
+
+  <li><span class="highlight">T5 (Text-To-Text Transfer Transformer):</span> Developed by Google, T5 treats all NLP tasks as a text-to-text problem. For example, in translation, the input is the source sentence, and the output is the translated sentence. T5's unified framework allows it to perform well across a wide range of tasks, including summarization, translation, and question answering (Tunstall et al., 2022).</li>
+</ul>
+
+<h4 style="text-align:left; color:blue; margin-bottom:30px; margin-top:35px;">Fine-Tuning and Transfer Learning</h4>
+
+<p>Modern language models are often pre-trained on large datasets and then fine-tuned on specific tasks. This approach, known as <span class="highlight">transfer learning</span>, allows models to leverage the knowledge acquired during pre-training and apply it to new tasks with relatively small amounts of task-specific data.</p>
+
+<p>Fine-tuning typically involves adjusting the model's parameters on the new task's data while keeping the overall architecture and pre-trained weights intact. This process can significantly improve the model's performance on specialized tasks and is widely used in both academia and industry (Tunstall et al., 2022).</p>
+
+<center><hr align="center" width="50%" class="solid"></center><h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">Ethical Considerations in Language Modeling</h4><center><hr align="center" width="50%" class="solid"></center>
+<p>The development and deployment of large language models raise significant ethical concerns. As these models become more powerful and pervasive, it is crucial to address issues related to <span class="highlight">bias</span>, <span class="highlight">fairness</span>, and <span class="highlight">transparency</span>.</p>
+
+<h4 style="text-align:left; color:blue; margin-bottom:30px; margin-top:35px;">Bias and Fairness</h4>
+
+<p>Language models learn from large datasets, which often contain biases present in human-generated text. These biases can manifest in the model's predictions, leading to unfair or discriminatory outcomes. For example, a language model might generate gender-biased sentences if the training data contains gender stereotypes.</p>
+
+<p>Efforts to mitigate bias include curating more diverse training datasets, applying bias detection algorithms, and incorporating fairness constraints during training. However, achieving completely unbiased language models remains a challenging and ongoing area of research (Tunstall et al., 2022).</p>
+
+<h4 style="text-align:left; color:blue; margin-bottom:30px; margin-top:35px;">Transparency and Explainability</h4>
+
+<p>Another ethical concern is the lack of transparency in how language models make predictions. Large models like GPT-3 are often seen as "black boxes" due to their complexity and the vast amount of data they process. This lack of explainability can be problematic in high-stakes applications, such as healthcare or legal decision-making, where understanding the model's reasoning is crucial.</p>
+
+<p>Researchers are exploring methods to improve the interpretability of language models, such as attention visualization, model distillation, and the development of inherently interpretable architectures (Jurafsky & Martin, 2020; Tunstall et al., 2022).</p>
+
+<center><hr align="center" width="50%" class="solid"></center><h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">Conclusion: The Future of Language Models</h4><center><hr align="center" width="50%" class="solid"></center>
+<p><span class="highlight">Language models</span> are more than just tools for text generation; they are a gateway to unlocking the full potential of AI in understanding and interacting with human language. As research continues to advance, we can expect even more sophisticated models that can perform a broader range of tasks with greater accuracy and nuance.</p>
+
+<p>The significance of language models in both academia and industry cannot be overstated. They are reshaping how we interact with machines, and their impact will only grow as they become more integrated into our daily lives. Whether in voice assistants, chatbots, or content generation tools, <span class="highlight">language models</span> are here to stay, driving the future of human-computer interaction.</p>
+
+</div>
+
+    <!-- ---------- FOOTER ---------- -->
+    <footer class="footer">
+      <div class="waves">
+        <div class="wave" id="wave1"></div>
+        <div class="wave" id="wave2"></div>
+        <div class="wave" id="wave3"></div>
+      </div>
+      <div class="footer-elem-container">
+        <ul class="social-icon">
+          <li class="social-icon__item"><a class="social-icon__link" href="https://www.linkedin.com/in/hamoutni/" target="_blank"><ion-icon name="logo-linkedIn"></ion-icon></a></li>
+          <li class="social-icon__item"><a class="social-icon__link" href="https://www.kaggle.com/AnasHamoutni" target="_blank"><i class="fab fa-kaggle foote"></i></a></li>
+          <li class="social-icon__item"><a class="social-icon__link" href="https://github.com/AnasHamoutni" target="_blank"><ion-icon name="logo-github"></ion-icon></a></li>
+          <li class="social-icon__item"><a class="social-icon__link" href="https://x.com/AnasHamoutni" target="_blank">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 462.799" width="32" height="32" style="vertical-align:baseline;">
+              <path fill="#fff" fill-rule="nonzero" d="M403.229 0h78.506L310.219 196.04 512 462.799H354.002L230.261 301.007 88.669 462.799h-78.56l183.455-209.683L0 0h161.999l111.856 147.88L403.229 0zm-27.556 415.805h43.505L138.363 44.527h-46.68l283.99 371.278z"/>
+            </svg>
+          </a></li>
+        </ul>
+        <ul class="menu">
+          <li class="menu__item"><a class="menu__link" href="/index.html">Home</a></li>
+          <li class="menu__item"><a class="menu__link" href="/Projects.html">Projects</a></li>
+          <li class="menu__item"><a class="menu__link" href="/About-me.html">About me</a></li>
+          <li class="menu__item"><a class="menu__link" href="/Blog.html">Blog</a></li>
+          <li class="menu__item"><a class="menu__link" href="/Get-in-Touch.html">Get in Touch</a></li>
+          <li class="menu__item"><a class="menu__link" href="/Privacy-Policy.html">Privacy Policy</a></li>
+          <li class="menu__item"><a class="menu__link" href="/Terms-of-Service.html">Terms of Service</a></li>
+          <li class="menu__item"><a class="menu__link" href="/Cookie-Policy.html">Cookie Policy</a></li>
+        </ul>
+        <div class="p-foot-div">
+          <p>&copy;2025 Kudos AI • by Anas HAMOUTNI • All Rights Reserved</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- ---------- SCRIPTS ---------- -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script src='https://kit.fontawesome.com/d25a67fa19.js' crossorigin='anonymous' defer></script>
+    <script src="/index.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Kudos AI | Blog | Inside the Confusion Matrix: Metrics Every Data Scientist Should Know</title>
+    <meta name="description"
+          content="A careful, beginner-friendly deep dive into the confusion matrix and classification metrics: accuracy, precision, recall, specificity, F1, ROC-AUC, PR-AUC, MCC, kappa, calibration, threshold tuning, imbalanced data, multi-class averaging, and hands-on Python.">
+    <meta name="keywords"
+          content="confusion matrix, precision recall f1, specificity sensitivity, ROC AUC, PR AUC, Matthews correlation coefficient, Cohen's kappa, calibration, Brier score, threshold tuning, imbalanced classification, scikit-learn example">
+
+    <!-- Template CSS & icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="/styles.css"/>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VCL644R1SZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-VCL644R1SZ');
+    </script>
+    <link rel="icon" type="image/x-icon" href="/Kudos_AI_favicon.png">
+
+    <!-- MathJax -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+      /* keep your template look + gentle helpers */
+      .highlight{color:#007bff;font-weight:bold;}
+      p{margin-bottom:1em;}
+      .math-equation{text-align:center;margin:1em 0;font-family:"Courier New",monospace;}
+      pre{background:#f8f9fa;border:1px solid #ddd;padding:10px;border-radius:5px;overflow-x:auto;}
+      .video-container{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;background:#000;margin:0 auto;border-radius:12px;}
+      .video-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:12px;}
+      .image-container{text-align:center;margin:20px 0;}
+      .responsive-image{max-width:100%;height:auto;display:inline-block;border-radius:8px;}
+      h3{text-align:center;}h4{text-align:left;}
+      .eli5{background:#f6ffed;border-left:4px solid #52c41a;padding:10px;border-radius:4px;margin:14px 0;}
+      .note{background:#eef7ff;border-left:4px solid #007bff;padding:10px;border-radius:4px;margin:14px 0;}
+      .tip {background:#fff7e6;border-left:4px solid #ffbf00;padding:10px;border-radius:4px;margin:14px 0;}
+      .warn{background:#ffecec;border-left:4px solid #ff4d4f;padding:10px;border-radius:4px;margin:14px 0;}
+      .checklist li{margin-bottom:.4em;}
+      .mini{font-size:.95em;color:#444;}
+      .toc a{color:#007bff;text-decoration:none;}
+      .toc a:hover{text-decoration:underline;}
+      .kbd{font-family:monospace;background:#f1f1f1;border:1px solid #ddd;border-radius:4px;padding:2px 6px;}
+      .boxed{border:1px solid #007bff;border-radius:6px;padding:8px 12px;background:#eef7ff;}
+      .example{background:#fafafa;border:1px dashed #ccc;border-radius:6px;padding:10px;margin:14px 0;}
+      .table-mini td,.table-mini th{padding:.45rem .6rem;}
+      .cmatrix{border-collapse:separate;border-spacing:0 6px;margin:6px auto;}
+      .cmatrix th,.cmatrix td{padding:.5rem .8rem;border:1px solid #ddd;}
+      .good{background:#e8fff1;}
+      .bad{background:#fff1f0;}
+    </style>
+  </head>
+
+  <body>
+    <!-- ---------- NAVBAR ---------- -->
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color:white;">
+      <a class="navbar-brand" href="/index.html"><img width="180" src="/Kudos_AI_logo_transparent.png" alt="Kudos AI Logo"></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNavbarToggler10"
+              aria-controls="myNavbarToggler10" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="myNavbarToggler10">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item"><a class="nav-link" href="/index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Projects.html">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="/About-me.html">About me</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Blog.html">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Get-in-Touch.html">Get in Touch</a></li>
+        </ul>
+        <ul class="navbar-nav sm-icons mr-0 d-flex justify-content-center">
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://www.linkedin.com/in/hamoutni/"><i class="fa-brands fa-linkedin-in" style="margin-top:7px;"></i></a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://www.kaggle.com/anashamoutni"><i class="fab fa-kaggle"></i></a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://github.com/AnasHamoutni"><i class="fab fa-github" style="margin-top:7px;"></i></a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://x.com/anashamoutni"><i class="fab fa-x-twitter" style="margin-top:7px;"></i></a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- ---------- HERO IMAGE + TITLE ---------- -->
+    <div class="blogPost-div">
+      <img class="imgPost" loading="lazy"
+           src="Confusion-Matrix-Header.png"
+           alt="Confusion Matrix and Key Classification Metrics"/>
+      <div class="blogPost-title-div">
+        <h2 class="blogPost-title">Inside the Confusion Matrix: Metrics Every Data Scientist Should Know</h2>
+      </div>
+
+      <!-- ---------- MAIN ARTICLE BODY ---------- -->
+      <div class="postBody-div">
+
+<!-- ===== ABSTRACT ===== -->
+<p><em>Nearly every classification problem ends with a <span class="highlight"><a href="https://en.wikipedia.org/wiki/Confusion_matrix" target="_blank">confusion matrix</a></span>. It looks simple—TP, FP, TN, FN—but it hides a whole ecosystem of metrics. This guide explains each one <b>slowly and clearly</b>: accuracy, precision, recall (<span class="highlight"><a href="https://en.wikipedia.org/wiki/Sensitivity_and_specificity" target="_blank">sensitivity/specificity</a></span>), F1 and \(F_\beta\), ROC-AUC vs PR-AUC, <span class="highlight"><a href="https://en.wikipedia.org/wiki/Matthews_correlation_coefficient" target="_blank">MCC</a></span>, <span class="highlight"><a href="https://en.wikipedia.org/wiki/Cohen%27s_kappa" target="_blank">Cohen’s \(\kappa\)</a></span>, calibration & Brier score, threshold tuning, averaging (micro/macro/weighted), multi-class, and what to pick for imbalanced data. You’ll also get hands-on Python code you can run and adapt.</em></p>
+
+<!-- ===== ELI5 ===== -->
+<div class="eli5">
+  <b>ELI5:</b> We make predictions like “spam” or “not spam.” The confusion matrix is a 2×2 table that counts how often we were right or wrong for each class. From those four counts, we build useful scores that answer different business questions.
+</div>
+
+<!-- ===== TOC ===== -->
+<div class="note toc">
+  <strong>Contents</strong> —
+  <a href="#matrix">1) The Confusion Matrix</a> ·
+  <a href="#basic">2) Basic Rates & Formulas</a> ·
+  <a href="#f1">3) F1 and \(F_\beta\)</a> ·
+  <a href="#rocpr">4) ROC vs PR Curves (AUC)</a> ·
+  <a href="#mcc-kappa">5) MCC & Cohen’s \(\kappa\)</a> ·
+  <a href="#calibration">6) Calibration & Brier Score</a> ·
+  <a href="#thresholds">7) Threshold Tuning</a> ·
+  <a href="#imbalance">8) Imbalanced Data & Averaging</a> ·
+  <a href="#multiclass">9) Multi-Class Confusion Matrix</a> ·
+  <a href="#python">10) Python: End-to-End Example</a> ·
+  <a href="#cheats">11) Metric Cheatsheet</a> ·
+  <a href="#glossary">12) Glossary</a> ·
+  <a href="#refs">13) References</a> ·
+  <a href="#faq">14) FAQ</a>
+</div>
+
+<!-- ========== 1. CONFUSION MATRIX ========== -->
+<center><hr width="50%" class="solid"></center>
+<h3 id="matrix" style="color:blue;margin-top:35px;margin-bottom:30px;">1) The Confusion Matrix</h3>
+<center><hr width="50%" class="solid"></center>
+
+<p>For binary classification (positive vs negative), we count:</p>
+
+<div class="image-container">
+  <img src="Confusion-matrix-illustration.png" alt="Confusion matrix illustration" class="responsive-image">
+</div>
+
+<div class="example">
+<b>Example counts:</b> TP=600, FP=100, TN=9000, FN=300 (10000 samples, 700 positives).  
+We’ll reuse these to calculate metrics.
+</div>
+
+<!-- ========== 2. BASIC RATES & FORMULAS ========== -->
+<center><hr width="50%" class="solid"></center>
+<h3 id="basic" style="color:blue;margin-top:35px;margin-bottom:30px;">2) Basic Rates & Formulas</h3>
+<center><hr width="50%" class="solid"></center>
+
+<p>From TP, FP, TN, FN we define:</p>
+
+<div class="math-equation">
+$$
+\textbf{Accuracy}=\frac{TP+TN}{TP+FP+TN+FN}
+$$
+</div>
+
+<div class="math-equation">
+$$
+\textbf{Precision (PPV)}=\frac{TP}{TP+FP},
+\qquad
+\textbf{Recall (TPR, Sensitivity)}=\frac{TP}{TP+FN}
+$$
+</div>
+
+<div class="math-equation">
+$$
+\textbf{Specificity (TNR)}=\frac{TN}{TN+FP},
+\qquad
+\textbf{False Positive Rate (FPR)}=\frac{FP}{FP+TN}=1-\text{Specificity}
+$$
+</div>
+
+<div class="math-equation">
+$$
+\textbf{Negative Predictive Value (NPV)}=\frac{TN}{TN+FN},
+\qquad
+\textbf{Prevalence}=\frac{TP+FN}{\text{Total}}
+$$
+</div>
+
+<div class="example">
+<b>Using the example:</b>  
+Accuracy = (600+9000)/10000 = 0.96  
+Precision = 600/(600+100) = 0.857 
+Recall = 600/(600+300) ≈ 0.666 
+Specificity = 9000/(9000+100) ≈ 0.989 
+FPR = 1 − 0.989 ≈ 0.011
+</div>
+
+<div class="warn mini">
+<b>Accuracy caveat:</b> With severe <a href="https://medium.com/@dakshrathi/handling-imbalanced-data-key-techniques-for-better-machine-learning-6e33b466f8b7" target="_blank">class imbalance</a>, accuracy can be misleading. A “predict negative always” model can score 99% accuracy if positives are 1%.
+</div>
+
+<!-- ========== 3. F1 and F-beta ========== -->
+<center><hr width="50%" class="solid"></center>
+<h3 id="f1" style="color:blue;margin-top:35px;margin-bottom:30px;">3) F1 and \(F_\beta\): balancing precision & recall</h3>
+<center><hr width="50%" class="solid"></center>
+
+<p><b>F1</b> is the harmonic mean of precision and recall—high only when both are high.</p>
+
+<div class="math-equation">
+$$
+\textbf{F1} = \frac{2\cdot \text{Precision}\cdot \text{Recall}}{\text{Precision}+\text{Recall}}
+$$
+</div>
+
+<p>Generalizing, \(F_\beta\) emphasizes recall (if \(\beta>1\)) or precision (if \(\beta<1\)):</p>
+
+<div class="math-equation">
+$$
+F_\beta=(1+\beta^2)\cdot
+\frac{\text{Precision}\cdot \text{Recall}}
+{\beta^2\cdot \text{Precision}+\text{Recall}}
+$$
+</div>
+
+<div class="example">
+<b>With Precision=0.857, Recall≈0.666:</b>  
+F1 ≈ 2·0.857·0.666/(0.857+0.666) ≈ 0.7495
+</div>
+
+<!-- ========== 4. ROC vs PR ========== -->
+<center><hr width="50%" class="solid"></center>
+<h3 id="rocpr" style="color:blue;margin-top:35px;margin-bottom:30px;">4) ROC vs PR Curves (and AUC)</h3>
+<center><hr width="50%" class="solid"></center>
+
+<p>Most classifiers output a probability/score. You choose a threshold \(t\) (e.g., \(0.5\)) to convert score → class. As \(t\) moves from 1→0, metrics change:</p>
+
+<ul class="checklist">
+  <li><b>ROC curve:</b> plot TPR (Recall) vs FPR. <a href="https://en.wikipedia.org/wiki/Receiver_operating_characteristic" target="_blank">ROC AUC</a> is the area under this curve.</li>
+  <li><b>PR curve:</b> plot Precision vs Recall. <a href="https://en.wikipedia.org/wiki/Precision_and_recall" target="_blank">Average Precision (PR AUC)</a> summarizes the curve.</li>
+</ul>
+
+<div class="image-container">
+  <img src="roc-pr-curves.png" alt="ROC and PR curves" class="responsive-image">
+</div>
+
+<div class="tip mini">
+<b>Rule of thumb:</b> ROC-AUC is fine with balanced classes. For <em>rare positives</em>, PR-AUC is more informative because it focuses on your ability to retrieve positives without too many false alarms.
+</div>
+
+<!-- ========== 5. MCC & KAPPA ========== -->
+<center><hr width="50%" class="solid"></center>
+<h3 id="mcc-kappa" style="color:blue;margin-top:35px;margin-bottom:30px;">5) Matthews Correlation (MCC) & Cohen’s \(\kappa\)</h3>
+<center><hr width="50%" class="solid"></center>
+
+<p><b>MCC</b> is a single score that stays meaningful under class imbalance (−1…+1; 0 = random; 1 = perfect):</p>
+
+<div class="math-equation">
+$$
+\textbf{MCC}=\frac{TP\cdot TN - FP\cdot FN}
+{\sqrt{(TP+FP)(TP+FN)(TN+FP)(TN+FN)}}
+$$
+</div>
+
+<p><b>Cohen’s \(\kappa\)</b> compares accuracy to what you’d expect by chance agreement:</p>
+
+<div class="math-equation">
+$$
+\kappa = \frac{p_o - p_e}{1 - p_e}
+\quad\text{where}\quad
+p_o=\frac{TP+TN}{N},\quad
+p_e=\frac{(TP+FP)(TP+FN)+(FN+TN)(FP+TN)}{N^2}.
+$$
+</div>
+
+<div class="note mini">
+<b>When to use:</b> MCC is great for imbalanced binary tasks; \(\kappa\) is handy when label distributions are skewed or annotator agreement matters.
+</div>
+
+<!-- ========== 6. CALIBRATION ========== -->
+<center><hr width="50%" class="solid"></center>
+<h3 id="calibration" style="color:blue;margin-top:35px;margin-bottom:30px;">6) Calibration & Brier Score</h3>
+<center><hr width="50%" class="solid"></center>
+
+<p>Two classifiers can have the same ROC-AUC, but one could be <em>better calibrated</em> (its probabilities reflect real-world frequencies). The <a href="https://en.wikipedia.org/wiki/Brier_score" target="_blank">Brier score</a> measures this:</p>
+
+<div class="math-equation">
+$$
+\textbf{Brier}=\frac{1}{N}\sum_{i=1}^N (\hat p_i - y_i)^2
+$$
+</div>
+
+<p>Lower is better. You can visualize calibration with a <b>reliability curve</b> (predicted probs binned vs actual positive rate). Techniques like Platt scaling or isotonic regression improve calibration.</p>
+
+<!-- ========== 7. THRESHOLD TUNING ========== -->
+<center><hr width="50%" class="solid"></center>
+<h3 id="thresholds" style="color:blue;margin-top:35px;margin-bottom:30px;">7) Threshold Tuning (align metrics with business costs)</h3>
+<center><hr width="50%" class="solid"></center>
+
+<p>Default \(t=0.5\) is arbitrary. Pick the threshold that optimizes what you care about:</p>
+<ul class="checklist">
+  <li>Maximize F1 if you value both precision & recall.</li>
+  <li>Maximize precision @ target recall (or vice versa).</li>
+  <li>Minimize cost \(C = c_{FP}\cdot FP + c_{FN}\cdot FN\) if errors have different prices.</li>
+</ul>
+
+<div class="boxed mini">
+<b>Tip:</b> Use validation data to pick \(t\), not the training set. Keep a separate test set to estimate real-world performance.
+</div>
+
+<!-- ========== 8. IMBALANCED & AVERAGING ========== -->
+<center><hr width="50%" class="solid"></center>
+<h3 id="imbalance" style="color:blue;margin-top:35px;margin-bottom:30px;">8) Imbalanced Data & Averaging Strategies</h3>
+<center><hr width="50%" class="solid"></center>
+
+<p><b>Binary:</b> prefer PR-AUC, MCC, recall at fixed precision, or precision at fixed recall. Consider class-weighted losses or re-sampling.</p>
+
+<p><b>Multi-class:</b> metrics can be averaged across classes:</p>
+<ul>
+  <li><b>Micro</b>: compute global TP/FP/FN and then the metric. Favors large classes.</li>
+  <li><b>Macro</b>: average metric per class equally. Treats all classes equally.</li>
+  <li><b>Weighted</b>: macro but weighted by class support. Compromise between micro and macro.</li>
+</ul>
+
+<div class="tip mini">
+<b>When minority classes matter:</b> report macro F1 (treat each class equally) and per-class metrics, not just accuracy.
+</div>
+
+<!-- ========== 9. MULTI-CLASS ========== -->
+<center><hr width="50%" class="solid"></center>
+<h3 id="multiclass" style="color:blue;margin-top:35px;margin-bottom:30px;">9) Multi-Class Confusion Matrix</h3>
+<center><hr width="50%" class="solid"></center>
+
+<p>For \(K\) classes, the confusion matrix is \(K\times K\). Row \(i\) (actual) vs column \(j\) (predicted). Diagonal = correct. Off-diagonal = confusions.</p>
+
+<div class="image-container">
+  <img src="Multi-class-confusion-matrix.png" alt="Multi-class confusion matrix heatmap" class="responsive-image">
+</div>
+
+<p>Compute per-class precision/recall/F1 by treating each class as “positive” vs “rest” (one-vs-rest), then average (micro/macro/weighted).</p>
+
+<!-- ========== 10. PYTHON ========== -->
+<center><hr width="50%" class="solid"></center>
+<h3 id="python" style="color:blue;margin-top:35px;margin-bottom:30px;">10) Python: End-to-End Example (binary + imbalanced)</h3>
+<center><hr width="50%" class="solid"></center>
+
+<pre><code class="language-python">import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_classification
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import (confusion_matrix, accuracy_score, precision_score, recall_score, f1_score,
+                             roc_auc_score, average_precision_score, matthews_corrcoef,
+                             classification_report, cohen_kappa_score, brier_score_loss,
+                             precision_recall_curve, roc_curve)
+from sklearn.calibration import calibration_curve
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+# 1) Imbalanced toy data: 5% positives
+X, y = make_classification(n_samples=6000, n_features=10, n_informative=6,
+                           weights=[0.95, 0.05], random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3,
+                                                    stratify=y, random_state=42)
+
+# 2) Scale + logistic regression with class_weight='balanced' (helps imbalance)
+scaler = StandardScaler().fit(X_train)
+X_train_s, X_test_s = scaler.transform(X_train), scaler.transform(X_test)
+clf = LogisticRegression(max_iter=200, class_weight='balanced', random_state=42)
+clf.fit(X_train_s, y_train)
+
+# 3) Scores & default threshold 0.5
+proba = clf.predict_proba(X_test_s)[:, 1]
+pred05 = (proba >= 0.5).astype(int)
+
+cm = confusion_matrix(y_test, pred05)
+acc = accuracy_score(y_test, pred05)
+prec = precision_score(y_test, pred05)
+rec = recall_score(y_test, pred05)
+f1 = f1_score(y_test, pred05)
+mcc = matthews_corrcoef(y_test, pred05)
+kappa = cohen_kappa_score(y_test, pred05)
+roc_auc = roc_auc_score(y_test, proba)
+ap = average_precision_score(y_test, proba)   # PR AUC
+brier = brier_score_loss(y_test, proba)
+
+print("Confusion matrix (t=0.5):\n", cm)
+print(f"Accuracy={acc:.3f}  Precision={prec:.3f}  Recall={rec:.3f}  F1={f1:.3f}")
+print(f"MCC={mcc:.3f}  Kappa={kappa:.3f}  ROC-AUC={roc_auc:.3f}  PR-AUC={ap:.3f}  Brier={brier:.3f}")
+
+print("\nPer-class report:")
+print(classification_report(y_test, pred05, digits=3))
+
+# 4) Threshold tuning via PR curve: pick threshold for target recall, e.g., 0.80
+precisions, recalls, thrs = precision_recall_curve(y_test, proba)
+target_recall = 0.80
+idx = np.argmin(np.abs(recalls - target_recall))
+t_star = thrs[max(idx-1,0)]  # thrs has length len(recalls)-1
+pred_t = (proba >= t_star).astype(int)
+print(f"\nChosen threshold for recall≈{target_recall}: t*={t_star:.3f}")
+
+# 5) ROC/PR curves
+fpr, tpr, _ = roc_curve(y_test, proba)
+plt.figure(figsize=(11,4))
+plt.subplot(1,2,1); plt.plot(fpr, tpr, label=f'ROC AUC={roc_auc:.3f}')
+plt.plot([0,1],[0,1],'k--',alpha=.5); plt.xlabel('FPR'); plt.ylabel('TPR (Recall)')
+plt.title('ROC Curve'); plt.legend()
+
+plt.subplot(1,2,2); plt.plot(recalls, precisions, label=f'PR AUC={ap:.3f}')
+plt.xlabel('Recall'); plt.ylabel('Precision'); plt.title('PR Curve'); plt.legend()
+plt.tight_layout(); plt.show()
+
+# 6) Calibration curve (reliability diagram)
+prob_true, prob_pred = calibration_curve(y_test, proba, n_bins=10)
+plt.figure(figsize=(5,4))
+plt.plot(prob_pred, prob_true, 'o-', label='Model')
+plt.plot([0,1],[0,1],'k--',alpha=.5, label='Perfectly calibrated')
+plt.xlabel('Predicted probability'); plt.ylabel('True frequency'); plt.title('Calibration Curve')
+plt.legend(); plt.tight_layout(); plt.show()</code></pre>
+
+<p><b>What you’ll see:</b> On imbalanced data, accuracy can look fine while recall is poor. PR-AUC, MCC, and threshold tuning tell a fuller story. Calibration shows if your probabilities can be trusted.</p>
+
+<!-- ========== 11. CHEATSHEET ========== -->
+<center><hr width="50%" class="solid"></center>
+<h3 id="cheats" style="color:blue;margin-top:35px;margin-bottom:30px;">11) Quick Cheatsheet (what to use when)</h3>
+<center><hr width="50%" class="solid"></center>
+<div class="scroll-x">
+<table class="table table-bordered table-mini">
+  <thead class="thead-light">
+    <tr><th>Scenario</th><th>Prefer</th><th>Why</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Balanced binary task</td>
+      <td>Accuracy, ROC-AUC, F1</td>
+      <td>All classes represented; ROC-AUC summarizes ranking.</td>
+    </tr>
+    <tr>
+      <td>Imbalanced (rare positives)</td>
+      <td>PR-AUC, Recall@Precision, MCC, F1/F\(_\beta\)</td>
+      <td>Focus on retrieving positives with controlled false alarms.</td>
+    </tr>
+    <tr>
+      <td>Business costs differ (FN ≫ FP or vice versa)</td>
+      <td>Cost-weighted objective, threshold tuning</td>
+      <td>Pick \(t\) that minimizes expected cost.</td>
+    </tr>
+    <tr>
+      <td>Multi-class; minority classes matter</td>
+      <td>Macro F1, per-class metrics, confusion heatmap</td>
+      <td>Treats all classes equally; makes confusions visible.</td>
+    </tr>
+    <tr>
+      <td>Need trustworthy probabilities</td>
+      <td>Calibration curve, Brier score</td>
+      <td>Good for decision thresholds and risk scoring.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<!-- ========== 12. GLOSSARY ========== -->
+<center><hr width="50%" class="solid"></center>
+<h3 id="glossary" style="color:blue;margin-top:35px;margin-bottom:30px;">12) Mini-Glossary (jargon → plain English)</h3>
+<center><hr width="50%" class="solid"></center>
+
+<ul>
+  <li><b>Confusion matrix</b> — 2×2 table of TP, FP, TN, FN.</li>
+  <li><b>Precision (PPV)</b> — of predicted positives, how many were correct?</li>
+  <li><b>Recall (Sensitivity, TPR)</b> — of actual positives, how many did we find?</li>
+  <li><b>Specificity (TNR)</b> — of actual negatives, how many did we keep as negative?</li>
+  <li><b>F1/F\(_\beta\)</b> — harmonic mean(s) balancing precision & recall.</li>
+  <li><b>ROC-AUC</b> — probability a random positive ranks above a random negative.</li>
+  <li><b>PR-AUC (Average Precision)</b> — area under precision-recall curve.</li>
+  <li><b>MCC</b> — correlation-like summary robust to imbalance.</li>
+  <li><b>Cohen’s \(\kappa\)</b> — accuracy vs chance-level agreement.</li>
+  <li><b>Calibration</b> — do probabilities match real frequencies?</li>
+</ul>
+
+<!-- ========== 13. REFERENCES ========== -->
+<center><hr width="50%" class="solid"></center>
+<h3 id="refs" style="color:blue;margin-top:35px;margin-bottom:30px;">13) References & Further Reading</h3>
+<center><hr width="50%" class="solid"></center>
+
+<ol>
+  <li>Wikipedia: <a href="https://en.wikipedia.org/wiki/Confusion_matrix" target="_blank">Confusion matrix</a>,
+      <a href="https://en.wikipedia.org/wiki/Precision_and_recall" target="_blank">Precision and recall</a>,
+      <a href="https://en.wikipedia.org/wiki/Receiver_operating_characteristic" target="_blank">ROC curve</a>,
+      <a href="https://en.wikipedia.org/wiki/Area_under_the_curve" target="_blank">AUC</a>,
+      <a href="https://en.wikipedia.org/wiki/Sensitivity_and_specificity" target="_blank">Sensitivity & Specificity</a>,
+      <a href="https://en.wikipedia.org/wiki/Matthews_correlation_coefficient" target="_blank">Matthews correlation coefficient</a>,
+      <a href="https://en.wikipedia.org/wiki/Cohen%27s_kappa" target="_blank">Cohen’s kappa</a>,
+      <a href="https://en.wikipedia.org/wiki/Brier_score" target="_blank">Brier score</a>.</li>
+  <li>Hastie, Tibshirani, Friedman. <em>The Elements of Statistical Learning</em> — Ch. 2 (classification basics), Ch. 7 (model assessment).</li>
+  <li>Bishop, C.M. <em>Pattern Recognition and Machine Learning</em> — Ch. 4–8 (classification & evaluation).</li>
+  <li>Saito & Rehmsmeier (2015). “The Precision-Recall Plot Is More Informative than the ROC Plot When Evaluating Binary Classifiers on Imbalanced Datasets.”</li>
+</ol>
+
+<!-- ========== 14. FAQ ========== -->
+<center><hr width="50%" class="solid"></center>
+<h3 id="faq" style="color:blue;margin-top:35px;margin-bottom:30px;">14) FAQ</h3>
+<center><hr width="50%" class="solid"></center>
+
+<h4>Q1. Why is my accuracy high but F1 low?</h4>
+<p>Imbalance. Your model predicts the majority class well but misses many positives. Look at recall, precision, PR-AUC, MCC, and tune the threshold.</p>
+
+<h4>Q2. ROC-AUC vs PR-AUC—which should I report?</h4>
+<p>Balanced classes → ROC-AUC is fine. Rare positives → PR-AUC better reflects usefulness because it tracks precision at various recalls.</p>
+
+<h4>Q3. How do I choose a threshold?</h4>
+<p>Use validation curves: maximize F1 or pick the smallest threshold that achieves a target recall/precision, or minimize cost with class-specific penalties.</p>
+
+<h4>Q4. What about multi-label problems?</h4>
+<p>Compute metrics per label (treat each as binary) then micro/macro/weighted average. Also consider ranking metrics (mAP) if you predict top-k labels.</p>
+
+<h4>Q5. My probabilities aren’t trustworthy—fix?</h4>
+<p>Try calibration: Platt scaling (logistic) or isotonic regression on a validation set; re-check the calibration curve and Brier score.</p>
+
+      </div> <!-- /postBody-div -->
+    </div> <!-- /blogPost-div -->
+
+    <!-- ---------- FOOTER ---------- -->
+    <footer class="footer">
+      <div class="waves">
+        <div class="wave" id="wave1"></div>
+        <div class="wave" id="wave2"></div>
+        <div class="wave" id="wave3"></div>
+      </div>
+      <div class="footer-elem-container">
+        <ul class="social-icon">
+          <li class="social-icon__item"><a class="social-icon__link" href="https://www.linkedin.com/in/hamoutni/" target="_blank"><ion-icon name="logo-linkedIn"></ion-icon></a></li>
+          <li class="social-icon__item"><a class="social-icon__link" href="https://www.kaggle.com/AnasHamoutni" target="_blank"><i class="fab fa-kaggle foote"></i></a></li>
+          <li class="social-icon__item"><a class="social-icon__link" href="https://github.com/AnasHamoutni" target="_blank"><ion-icon name="logo-github"></ion-icon></a></li>
+          <li class="social-icon__item"><a class="social-icon__link" href="https://x.com/AnasHamoutni" target="_blank">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 462.799" width="32" height="32" style="vertical-align:baseline;"><path fill="#fff" fill-rule="nonzero" d="M403.229 0h78.506L310.219 196.04 512 462.799H354.002L230.261 301.007 88.669 462.799h-78.56l183.455-209.683L0 0h161.999l111.856 147.88L403.229 0zm-27.556 415.805h43.505L138.363 44.527h-46.68l283.99 371.278z"/></svg>
+          </a></li>
+        </ul>
+    <ul class="menu">
+      <li class="menu__item"><a class="menu__link" href="/index.html">Home</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Projects.html">Projects</a></li>
+      <li class="menu__item"><a class="menu__link" href="/About-me.html">About me</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Blog.html">Blog</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Get-in-Touch.html">Get in Touch</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Privacy-Policy.html">Privacy Policy</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Terms-of-Service.html">Terms of Service</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Cookie-Policy.html">Cookie Policy</a></li>
+    </ul>
+<div class="p-foot-div">
+    <p>&copy;2025 Kudos AI • by Anas HAMOUTNI • All Rights Reserved</p>
+</div>
+</div>
+    </footer>
+
+    <!-- ---------- SCRIPTS ---------- -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script src='https://kit.fontawesome.com/d25a67fa19.js' crossorigin='anonymous' defer></script>
+    <script src="/index.js" defer></script>
+  </body>
+</html>

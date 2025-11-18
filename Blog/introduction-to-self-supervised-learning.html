@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Kudos AI | Blog | Introduction to Self-Supervised Learning</title>
+<meta name="description"
+      content="Beginner-friendly yet in-depth guide to Self-Supervised Learning (SSL). Learn how machines teach themselves using contrastive learning, masked prediction, and reconstruction. Includes math, PyTorch code, examples from NLP, vision, and speech, applications like BERT, SimCLR, Wav2Vec, plus diagrams and a Yann LeCun video.">
+<meta name="keywords"
+      content="self-supervised learning, SSL, contrastive learning, masked prediction, reconstruction loss, BERT, GPT, SimCLR, BYOL, Wav2Vec, HuBERT, CLIP, computer vision, NLP, speech recognition, PyTorch SSL code, deep learning unsupervised, machine learning tutorial">
+
+    <!-- Template CSS & icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="/styles.css"/>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VCL644R1SZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-VCL644R1SZ');
+    </script>
+    <link rel="icon" type="image/x-icon" href="/Kudos_AI_favicon.png">
+
+    <!-- MathJax -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+      /* keep your template look + gentle helpers */
+      .highlight{color:#007bff;font-weight:bold;}
+      p{margin-bottom:1em;}
+      .math-equation{text-align:center;margin:1em 0;font-family:"Courier New",monospace;}
+      pre{background:#f8f9fa;border:1px solid #ddd;padding:10px;border-radius:5px;overflow-x:auto;}
+      .video-container{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;background:#000;margin:0 auto;border-radius:12px;}
+      .video-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:12px;}
+      .image-container{text-align:center;margin:20px 0;}
+      .responsive-image{max-width:100%;height:auto;display:inline-block;border-radius:8px;}
+      h3{text-align:center;}h4{text-align:left;}
+      .eli5{background:#f6ffed;border-left:4px solid #52c41a;padding:10px;border-radius:4px;margin:14px 0;}
+      .note{background:#eef7ff;border-left:4px solid #007bff;padding:10px;border-radius:4px;margin:14px 0;}
+      .tip {background:#fff7e6;border-left:4px solid #ffbf00;padding:10px;border-radius:4px;margin:14px 0;}
+      .warn{background:#ffecec;border-left:4px solid #ff4d4f;padding:10px;border-radius:4px;margin:14px 0;}
+      .checklist li{margin-bottom:.4em;}
+      .mini{font-size:.95em;color:#444;}
+      .toc a{color:#007bff;text-decoration:none;}
+      .toc a:hover{text-decoration:underline;}
+      .kbd{font-family:monospace;background:#f1f1f1;border:1px solid #ddd;border-radius:4px;padding:2px 6px;}
+      .boxed{border:1px solid #007bff;border-radius:6px;padding:8px 12px;background:#eef7ff;}
+      .example{background:#fafafa;border:1px dashed #ccc;border-radius:6px;padding:10px;margin:14px 0;}
+      .table-mini td,.table-mini th{padding:.45rem .6rem;}
+      .shape{font-family:monospace;color:#333;background:#f6f8fa;border:1px solid #eaecef;padding:4px 8px;border-radius:4px;}
+    </style>
+  </head>
+
+  <body>
+    <!-- ---------- NAVBAR ---------- -->
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color:white;">
+      <a class="navbar-brand" href="/index.html"><img width="180" src="/Kudos_AI_logo_transparent.png" alt="Kudos AI Logo"></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNavbarToggler10"
+              aria-controls="myNavbarToggler10" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="myNavbarToggler10">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item"><a class="nav-link" href="/index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Projects.html">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="/About-me.html">About me</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Blog.html">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Get-in-Touch.html">Get in Touch</a></li>
+        </ul>
+        <ul class="navbar-nav sm-icons mr-0 d-flex justify-content-center">
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://www.linkedin.com/in/hamoutni/"><i class="fa-brands fa-linkedin-in" style="margin-top:7px;"></i></a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://www.kaggle.com/anashamoutni"><i class="fab fa-kaggle"></i></a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://github.com/AnasHamoutni"><i class="fab fa-github" style="margin-top:7px;"></i></a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://x.com/anashamoutni"><i class="fab fa-x-twitter" style="margin-top:7px;"></i></a></li>
+        </ul>
+      </div>
+    </nav>
+
+<div class="postBody-div">
+
+<p><span style="color:red"><a href="https://en.wikipedia.org/wiki/Self-supervised_learning" target="_blank">Self-Supervised Learning</a></span> (SSL) is one of the most exciting and rapidly growing paradigms in <span style="color:blue"><a href="https://en.wikipedia.org/wiki/Machine_learning" target="_blank">machine learning</a></span>. It sits between <span style="color:red">supervised learning</span> and <span style="color:red">unsupervised learning</span>, and is now the foundation of some of the most powerful AI models, including <span style="color:blue"><a href="https://openai.com/chatgpt" target="_blank">ChatGPT</a></span>, <span style="color:blue"><a href="https://en.wikipedia.org/wiki/BERT_(language_model)" target="_blank">BERT</a></span>, and <span style="color:blue"><a href="https://ai.facebook.com/tools/wav2vec-2-0/" target="_blank">Wav2Vec</a></span>.</p>
+
+<p>The main idea is simple yet revolutionary: instead of requiring expensive human-annotated labels, SSL creates its <span style="color:red">own supervision signal</span> from the data itself. In other words, the model learns by solving pretext tasks such as predicting missing parts, distinguishing positive pairs from negatives, or reconstructing corrupted input.</p>
+
+<center><hr align="center" width="50%" class="solid"></center>
+<h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">- Why Self-Supervised Learning Matters -</h4>
+<center><hr align="center" width="50%" class="solid"></center>
+
+<p>Traditionally, supervised learning has dominated artificial intelligence. But it depends on <span style="color:red">large labeled datasets</span>, which are expensive and time-consuming to create. Imagine labeling millions of medical scans or annotating speech recordings in dozens of languages — it’s nearly impossible. SSL bypasses this by <span style="color:green">extracting structure from unlabeled data</span>.</p>
+
+<p><b>Analogy:</b> When a baby learns language, they don’t need labeled data (“this is a cat”, “this is a dog”). Instead, they hear speech and infer patterns, later aligning them with meaning. SSL works similarly.</p>
+
+<img class="imgPost" loading="lazy" style="width:75%;margin:20px auto;display:block;" src="ssl-intuition-placeholder.jpg" alt="SSL intuition diagram placeholder">
+
+<p style="text-align:center; font-size:14px; color:gray;">Illustration placeholder: Intuition of self-supervised pretext tasks</p>
+
+
+<center><hr align="center" width="50%" class="solid"></center>
+<h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">- Mathematical Foundation of SSL -</h4>
+<center><hr align="center" width="50%" class="solid"></center>
+
+<p>At the core of SSL are <span style="color:red">objective functions</span> designed to create supervision signals. The most common include <span style="color:red">contrastive learning</span>, <span style="color:red">masked prediction</span>, and <span style="color:red">reconstruction losses</span>.</p>
+
+<p><b>Contrastive Loss (InfoNCE):</b></p>
+<div class="equation">
+L = - \log \frac{\exp(\text{sim}(z_i, z_j)/\tau)}{\sum_{k=1}^N \exp(\text{sim}(z_i, z_k)/\tau)}
+</div>
+
+<p>Where:</p>
+<ul>
+<li><code>z_i, z_j</code> are embeddings of positive pairs (e.g., two augmented views of the same image).</li>
+<li><code>sim()</code> is cosine similarity.</li>
+<li><code>\tau</code> is the temperature hyperparameter.</li>
+</ul>
+
+<p><b>Masked Language Modeling (used in BERT):</b></p>
+<div class="equation">
+L = - \sum_{t \in M} \log P(x_t | x_{\setminus M})
+</div>
+
+<p>This loss asks the model to predict missing tokens <code>x_t</code> given the context.</p>
+
+<p><b>Reconstruction Loss:</b> In autoencoders and speech SSL models:</p>
+<div class="equation">
+L = \| x - \hat{x} \|^2
+</div>
+
+<p>Here, the model reconstructs the original input from corrupted or compressed versions.</p>
+
+<center><hr align="center" width="50%" class="solid"></center>
+<h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">- SSL in Practice: Architectures and Examples -</h4>
+<center><hr align="center" width="50%" class="solid"></center>
+
+<h4 style="color:red">+ NLP</h4>
+<ul>
+<li><b>BERT</b>: Learns from masked words in a sentence.</li>
+<li><b>GPT</b>: Predicts the next token (causal LM, still SSL pretraining).</li>
+<li><b>T5</b>: Treats every task as a text-to-text problem.</li>
+</ul>
+
+<h4 style="color:red">+ Computer Vision</h4>
+<ul>
+<li><b>SimCLR</b>: Contrastive framework using augmented images.</li>
+<li><b>BYOL</b>: Bootstrapping without negatives.</li>
+<li><b>DINO</b>: Self-distillation with vision transformers.</li>
+</ul>
+
+<h4 style="color:red">+ Speech</h4>
+<ul>
+<li><b>Wav2Vec 2.0</b>: Predicts masked speech features.</li>
+<li><b>HuBERT</b>: Clusters and predicts hidden units.</li>
+</ul>
+
+<img class="imgPost" loading="lazy" style="width:80%;margin:20px auto;display:block;" src="ssl-models-placeholder.jpg" alt="SSL models comparison">
+
+<p style="text-align:center; font-size:14px; color:gray;">Illustration placeholder: Popular SSL frameworks</p>
+
+
+<center><hr align="center" width="50%" class="solid"></center>
+<h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">- Example Code: Contrastive Loss in PyTorch -</h4>
+<center><hr align="center" width="50%" class="solid"></center>
+
+<pre><code class="language-python">
+import torch
+import torch.nn.functional as F
+
+def contrastive_loss(z_i, z_j, temperature=0.5):
+    # Normalize embeddings
+    z_i = F.normalize(z_i, dim=-1)
+    z_j = F.normalize(z_j, dim=-1)
+    
+    # Cosine similarity matrix
+    logits = torch.matmul(z_i, z_j.T) / temperature
+    
+    labels = torch.arange(len(z_i)).to(z_i.device)
+    return F.cross_entropy(logits, labels)
+</code></pre>
+
+
+<center><hr align="center" width="50%" class="solid"></center>
+<h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">- Real-World Applications of SSL -</h4>
+<center><hr align="center" width="50%" class="solid"></center>
+
+<ul>
+<li><b>Chatbots & LLMs</b>: ChatGPT, GPT-4, LLaMA all pretrain with SSL.</li>
+<li><b>Medical Imaging</b>: Detect anomalies without labeled scans.</li>
+<li><b>Autonomous Driving</b>: Understanding scenes without human labels.</li>
+<li><b>Multimodal AI</b>: <span style="color:red">CLIP</span> learns joint vision–text representations.</li>
+<li><b>Robotics</b>: Learn world models to plan and act.</li>
+</ul>
+
+<img class="imgPost" loading="lazy" style="width:75%;margin:20px auto;display:block;" src="ssl-applications-placeholder.jpg" alt="SSL applications">
+
+<p style="text-align:center; font-size:14px; color:gray;">Illustration placeholder: SSL applications across domains</p>
+
+
+<center><hr align="center" width="50%" class="solid"></center>
+<h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">- Challenges and Limitations -</h4>
+<center><hr align="center" width="50%" class="solid"></center>
+
+<ul>
+<li>SSL models require huge compute and memory resources.</li>
+<li>Negative sampling and collapse prevention are tricky in vision models.</li>
+<li>Pretext task choice strongly influences downstream performance.</li>
+<li>Data bias in SSL pretraining can amplify societal bias.</li>
+</ul>
+
+
+<center><hr align="center" width="50%" class="solid"></center>
+<h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">- Future of SSL -</h4>
+<center><hr align="center" width="50%" class="solid"></center>
+
+<p>SSL is not just a technique, but a foundation for <span style="color:red">general-purpose AI</span>. Future directions include:</p>
+<ul>
+<li><b>Cross-modal learning</b>: Unifying text, vision, audio, and robotics in one model.</li>
+<li><b>Scaling laws</b>: Training on trillions of tokens for emergent reasoning.</li>
+<li><b>Energy-efficient SSL</b>: Making SSL accessible beyond big tech labs.</li>
+<li><b>Human-like learning</b>: Moving closer to how humans learn with minimal supervision.</li>
+</ul>
+
+
+<center><hr align="center" width="50%" class="solid"></center>
+<h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">- Learn More (Video) -</h4>
+<center><hr align="center" width="50%" class="solid"></center>
+
+<center>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/0KeR6i1_56g" 
+title="Self-Supervised Learning lecture" frameborder="0" 
+allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+allowfullscreen></iframe>
+</center>
+
+<p style="text-align:center; font-size:14px; color:gray;">Video: Yann LeCun on Self-Supervised Learning</p>
+
+
+</div>
+
+    <!-- ---------- FOOTER ---------- -->
+    <footer class="footer">
+      <div class="waves">
+        <div class="wave" id="wave1"></div>
+        <div class="wave" id="wave2"></div>
+        <div class="wave" id="wave3"></div>
+      </div>
+      <div class="footer-elem-container">
+        <ul class="social-icon">
+          <li class="social-icon__item"><a class="social-icon__link" href="https://www.linkedin.com/in/hamoutni/" target="_blank"><ion-icon name="logo-linkedIn"></ion-icon></a></li>
+          <li class="social-icon__item"><a class="social-icon__link" href="https://www.kaggle.com/AnasHamoutni" target="_blank"><i class="fab fa-kaggle foote"></i></a></li>
+          <li class="social-icon__item"><a class="social-icon__link" href="https://github.com/AnasHamoutni" target="_blank"><ion-icon name="logo-github"></ion-icon></a></li>
+          <li class="social-icon__item"><a class="social-icon__link" href="https://x.com/AnasHamoutni" target="_blank">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 462.799" width="32" height="32" style="vertical-align:baseline;"><path fill="#fff" fill-rule="nonzero" d="M403.229 0h78.506L310.219 196.04 512 462.799H354.002L230.261 301.007 88.669 462.799h-78.56l183.455-209.683L0 0h161.999l111.856 147.88L403.229 0zm-27.556 415.805h43.505L138.363 44.527h-46.68l283.99 371.278z"/></svg>
+          </a></li>
+        </ul>
+    <ul class="menu">
+      <li class="menu__item"><a class="menu__link" href="/index.html">Home</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Projects.html">Projects</a></li>
+      <li class="menu__item"><a class="menu__link" href="/About-me.html">About me</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Blog.html">Blog</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Get-in-Touch.html">Get in Touch</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Privacy-Policy.html">Privacy Policy</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Terms-of-Service.html">Terms of Service</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Cookie-Policy.html">Cookie Policy</a></li>
+    </ul>
+<div class="p-foot-div">
+    <p>&copy;2025 Kudos AI • by Anas HAMOUTNI • All Rights Reserved</p>
+</div>
+</div>
+    </footer>
+
+    <!-- ---------- SCRIPTS ---------- -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script src='https://kit.fontawesome.com/d25a67fa19.js' crossorigin='anonymous' defer></script>
+    <script src="/index.js" defer></script>
+  </body>
+</html>

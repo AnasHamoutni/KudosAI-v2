@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Kudos AI | Blog | Reinforcement Learning with Human Feedback (RLHF): A Gentle but Deep Guide</title>
+    <meta name="description"
+          content="A careful, beginner‑friendly yet technically deep guide to Reinforcement Learning with Human Feedback (RLHF): why we need it, SFT → Reward Model → PPO, KL penalty, Bradley–Terry preferences, math, NumPy & PyTorch code, diagrams, best practices, safety, DPO/RLAIF/Constitutional AI, plus a high‑quality explainer video." />
+    <meta name="keywords"
+          content="RLHF, reinforcement learning with human feedback, reward model, PPO, KL penalty, Bradley-Terry, preference learning, alignment, ChatGPT, InstructGPT, DPO, RLAIF, Constitutional AI, PyTorch, HuggingFace, NumPy, beginner friendly AI" />
+
+    <!-- Template CSS & libs -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="/styles.css"/>
+    <link rel="icon" type="image/x-icon" href="/Kudos_AI_favicon.png">
+
+    <!-- highlight.js (code styling) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/default.min.css" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <!-- MathJax (equations) -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+    <script id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+      /* minimal local helpers to match your blog style */
+      .highlight{color:#007bff;font-weight:bold;}
+      p{margin-bottom:1em;}
+      pre code{background:#f8f9fa;border:1px solid #e0e0e0;border-radius:6px;padding:12px;display:block;white-space:pre;overflow:auto;font-size:16px;}
+      .image-container{text-align:center;margin:22px 0;}
+      .responsive-image{max-width:100%;height:auto;border-radius:8px;}
+      .video-container{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;background:#000;border-radius:12px;margin:0 auto;}
+      .video-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:12px;}
+      .scroll-indicator{position:relative;overflow-x:auto;}
+      .math-equation{font-family:"Courier New",monospace;text-align:center;margin:12px auto;white-space:nowrap;}
+      h3{text-align:center;} h4{text-align:left;}
+      .note{background:#eef7ff;border-left:4px solid #007bff;padding:10px;border-radius:4px;margin:14px 0;}
+      .tip {background:#fff7e6;border-left:4px solid #ffbf00;padding:10px;border-radius:4px;margin:14px 0;}
+      .warn{background:#ffecec;border-left:4px solid #ff4d4f;padding:10px;border-radius:4px;margin:14px 0;}
+      .mini{font-size:.95em;color:#444;}
+      .toc a{color:#007bff;text-decoration:none;}
+      .toc a:hover{text-decoration:underline;}
+      .checklist li{margin-bottom:.4em;}
+    </style>
+  </head>
+
+  <body>
+    <!-- ---------- NAVBAR ---------- -->
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color:white;">
+      <a class="navbar-brand" href="/index.html"><img width="180" src="/Kudos_AI_logo_transparent.png" alt="Kudos AI Logo"></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNavbarToggler10"
+              aria-controls="myNavbarToggler10" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="myNavbarToggler10">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item"><a class="nav-link" href="/index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Projects.html">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="/About-me.html">About me</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Blog.html">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Get-in-Touch.html">Get in Touch</a></li>
+        </ul>
+        <ul class="navbar-nav sm-icons mr-0 d-flex justify-content-center">
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://www.linkedin.com/in/hamoutni/"><i class="fa-brands fa-linkedin-in" style="margin-top:7px;"></i></a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://www.kaggle.com/anashamoutni"><i class="fab fa-kaggle"></i></a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://github.com/AnasHamoutni"><i class="fab fa-github" style="margin-top:7px;"></i></a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://x.com/anashamoutni"><i class="fab fa-x-twitter" style="margin-top:7px;"></i></a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- ---------- ARTICLE ---------- -->
+    <div class="blogPost-div">
+      <img class="imgPost" loading="lazy"
+           src="RLHF.png"
+           alt="Reinforcement Learning with Human Feedback cover"/>
+      <div class="blogPost-title-div">
+        <h2 class="blogPost-title">Reinforcement Learning with Human Feedback (RLHF): A Gentle but Deep Guide</h2>
+      </div>
+
+      <div class="postBody-div">
+        <!-- ABSTRACT -->
+        <p><em>
+          Modern assistants like <span class="highlight"><a href="https://openai.com/chatgpt" target="_blank">ChatGPT</a></span>
+          feel helpful because they’re not only trained to <b>predict text</b>, they’re trained to <b>behave</b>.
+          The method behind this shift is <span class="highlight"><a href="https://en.wikipedia.org/wiki/Reinforcement_learning" target="_blank">reinforcement learning</a></span>
+          with human feedback (RLHF). In this article, we go step‑by‑step: the <b>intuition</b>, the
+          <b>3‑stage pipeline</b> (SFT → Reward Model → PPO), the <b>math</b> (Bradley–Terry, KL‑penalized objectives),
+          <b>NumPy/PyTorch code</b>, <b>diagrams</b>, <b>practical tips</b>, <b>safety</b> concerns, and where RLHF sits among
+          alternatives like <span class="highlight"><a href="https://arxiv.org/abs/2305.18290" target="_blank">DPO</a></span>,
+          RLAIF, and <span class="highlight"><a href="https://en.wikipedia.org/wiki/Constitutional_AI" target="_blank">Constitutional AI</a></span>.
+        </em></p>
+
+        <!-- TOC -->
+        <div class="note toc">
+          <strong>Contents</strong> —
+          <a href="#why">Why RLHF?</a> ·
+          <a href="#pipeline">Pipeline (SFT → RM → PPO)</a> ·
+          <a href="#sft">Stage 1: Supervised Fine‑Tuning</a> ·
+          <a href="#rm">Stage 2: Reward Model (Preferences)</a> ·
+          <a href="#ppo">Stage 3: PPO & KL Penalty</a> ·
+          <a href="#math">Math Corner</a> ·
+          <a href="#code">Hands‑on Code</a> ·
+          <a href="#practice">Practical Guidelines</a> ·
+          <a href="#cases">Case Studies</a> ·
+          <a href="#alt">Alternatives (DPO/RLAIF/Constitutional)</a> ·
+          <a href="#beyond">Beyond chatbots</a> ·
+          <a href="#video">Video</a> ·
+          <a href="#glossary">Glossary</a> ·
+          <a href="#refs">References</a> ·
+          <a href="#faq">FAQ</a>
+        </div>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="why" style="color:blue;margin-top:35px;margin-bottom:30px;">1) Why Do We Need RLHF?</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <p><b>Plain English.</b> Pretrained language models learn to continue text. That alone can produce factual,
+          polite, or wild outputs—depending on the data. There is no explicit signal of what <em>we want</em>.
+          <span class="highlight">RLHF</span> adds that signal by letting <b>humans rank outputs</b>, then steering the model
+          to prefer ranked‑higher answers.</p>
+
+        <p><b>Analogy.</b> A student (the model) learns grammar by reading billions of sentences (pretraining),
+          then learns “what’s appropriate” by receiving rubrics and feedback from instructors (human raters).
+          The final exam uses the <b>rubric</b> (reward model) to grade answers and push the student toward desired behavior.</p>
+
+        <div class="tip mini">
+          RLHF is not a replacement for pretraining. It’s a small but high‑leverage alignment layer on top of a huge base model.
+        </div>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="pipeline" style="color:blue;margin-top:35px;margin-bottom:30px;">2) The 3‑Stage RLHF Pipeline</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <div class="image-container">
+          <img src="rlhf-pipeline.png" alt="RLHF pipeline diagram" class="responsive-image">
+          <div class="mini">Figure: Pretrained LM → (1) Supervised Fine‑Tuning → (2) Reward Model via human preferences → (3) Policy Optimization (e.g., PPO) with KL regularization to keep the model close to the base.</div>
+        </div>
+
+        <ol class="checklist">
+          <li><b>Supervised Fine‑Tuning (SFT):</b> Make the model follow instructions using curated <i>(prompt, response)</i> pairs.</li>
+          <li><b>Reward Model (RM):</b> Collect human <i>pairwise preferences</i> for multiple responses to the same prompt; train a model to score answers.</li>
+          <li><b>Policy Optimization:</b> Treat the LM as a policy; optimize with RL to maximize the learned reward, while <b>penalizing divergence</b> from a reference model.</li>
+        </ol>
+
+        <div class="warn mini">
+          Without KL regularization, the policy can drift (hallucinate, overfit to quirks of the RM). The KL penalty keeps the model grounded.
+        </div>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="sft" style="color:blue;margin-top:35px;margin-bottom:30px;">3) Stage 1 — Supervised Fine‑Tuning (SFT)</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <p><b>Goal.</b> Teach basic instruction‑following. Start from a pretrained LM and fine‑tune on <b>human‑written</b>
+          completions to prompts. This stabilizes later stages and sets a good “style”.</p>
+
+        <div class="scroll-indicator"><div class="math-equation">
+          $$ \min_{\theta} \; \mathbb{E}_{(x,y^*) \sim \mathcal{D}} \left[ - \log \pi_\theta(y^* \mid x) \right] \quad \text{(token‑level cross‑entropy)} $$
+        </div></div>
+
+        <pre><code class="language-python"># Tiny SFT sketch (PyTorch + HF Transformers)
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+
+model_name = "gpt2"
+tok = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name)
+
+example = {"prompt": "Explain gravity to a child:",
+           "response": "Gravity is the invisible pull that makes things fall down to Earth."}
+
+inp_ids = tok(example["prompt"], return_tensors="pt").input_ids
+lbl_ids = tok(example["response"], return_tensors="pt").input_ids
+
+out = model(input_ids=inp_ids, labels=lbl_ids)
+print("SFT loss:", float(out.loss))</code></pre>
+
+        <div class="tip mini">
+          Curation matters: diverse prompts, safe/harmless examples, refusal patterns, chain‑of‑thought <i>(if used)</i> policy, and formatting conventions.
+        </div>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="rm" style="color:blue;margin-top:35px;margin-bottom:30px;">4) Stage 2 — Reward Model (Learning from Preferences)</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <p><b>Data.</b> For each prompt \(x\), sample multiple model answers \(\{y_1,\dots,y_k\}\).
+          Humans pick which answer is <em>better</em> (pairwise comparisons).
+          We then train a model \(R_\phi(x,y)\) that scores answers so that <i>preferred</i> ones get higher scores.</p>
+
+        <p><b>Bradley–Terry model.</b> For a pair \((y^+, y^-)\), the probability that \(y^+\) is preferred is
+          \(\sigma \big(R(x,y^+) - R(x,y^-)\big)\), where \(\sigma\) is the logistic function.</p>
+
+        <div class="scroll-indicator"><div class="math-equation">
+          $$ \mathcal{L}_\text{RM}(\phi) \;=\; - \sum_{(x, y^+, y^-)} \log \sigma \!\left(R_\phi(x, y^+) - R_\phi(x, y^-)\right) $$
+        </div></div>
+
+        <pre><code class="language-python"># Minimal reward-model head on top of a base transformer (conceptual)
+import torch, torch.nn as nn
+from transformers import AutoModel
+
+class RewardModel(nn.Module):
+    def __init__(self, base_name="distilroberta-base"):
+        super().__init__()
+        self.base = AutoModel.from_pretrained(base_name)
+        h = self.base.config.hidden_size
+        self.value_head = nn.Linear(h, 1)
+
+    def forward(self, input_ids, attention_mask=None):
+        out = self.base(input_ids=input_ids, attention_mask=attention_mask)
+        last_hidden = out.last_hidden_state  # [B, T, H]
+        # simple: use last token; or use EOS positions / mean pool
+        v = self.value_head(last_hidden[:, -1, :])  # [B, 1]
+        return v.squeeze(-1)</code></pre>
+
+        <p class="mini"><b>Calibration tip.</b> Keep reward magnitudes reasonable (e.g., z‑score rewards per batch). Extremely large/small rewards destabilize PPO.</p>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="ppo" style="color:blue;margin-top:35px;margin-bottom:30px;">5) Stage 3 — Policy Optimization (PPO + KL)</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <p><b>Goal.</b> View the LM as a policy \(\pi_\theta(\cdot \mid x)\).
+           Generate outputs, score them with the reward model \(R_\phi(x,y)\), and <b>improve the policy</b> using reinforcement learning.
+           Use <span class="highlight"><a href="https://en.wikipedia.org/wiki/Proximal_policy_optimization" target="_blank">PPO</a></span> for stable updates and add a <b>KL penalty</b> to keep the policy close to a reference model \(\pi_\text{ref}\) (often the SFT model).</p>
+
+        <div class="scroll-indicator"><div class="math-equation">
+          $$ J(\theta) \;=\; \mathbb{E}_{x, y \sim \pi_\theta} \left[ R_\phi(x,y)\;-\;\beta \, \mathrm{KL}\big(\pi_\theta(\cdot\!\mid x) \,\|\, \pi_{\text{ref}}(\cdot\!\mid x)\big) \right] $$
+        </div></div>
+
+        <p><b>PPO clip objective.</b> With advantage \(\hat{A}_t\) and ratio \(r_t(\theta) = \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_\text{old}}(a_t|s_t)}\):</p>
+
+        <div class="scroll-indicator"><div class="math-equation">
+          $$ \mathcal{L}_\text{PPO}(\theta) = \mathbb{E}_t\Big[\min\big(r_t(\theta)\hat{A}_t,\;\text{clip}(r_t(\theta),1-\epsilon,1+\epsilon)\hat{A}_t\big)\Big] $$
+        </div></div>
+
+        <pre><code class="language-python"># (Concept) PPO loop sketch using trl library (Hugging Face)
+# pip install trl accelerate datasets transformers
+# from trl import PPOTrainer, PPOConfig
+
+# config = PPOConfig(model_name="gpt2", learning_rate=1e-5, batch_size=8, target_kl=0.1)
+# ppo_trainer = PPOTrainer(config, model, ref_model, tokenizer, reward_model)
+
+# for batch_prompts in dataloader:
+#     gen_texts = ppo_trainer.generate(batch_prompts, max_new_tokens=128)
+#     rewards = reward_model.score(batch_prompts, gen_texts)  # your wrapper
+#     stats = ppo_trainer.step(batch_prompts, gen_texts, rewards)</code></pre>
+
+        <div class="tip mini">
+          <b>KL control.</b> Tune \(\beta\) (or target_kl) so outputs stay helpful but don’t drift into weirdness. Too small → reward hacking. Too big → model ignores the reward.
+        </div>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="math" style="color:blue;margin-top:35px;margin-bottom:30px;">6) Math Corner: From Preferences to Policy</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <h4>6.1 Bradley–Terry / Logistic preference</h4>
+        <div class="scroll-indicator"><div class="math-equation">
+          $$ P(y^+ \succ y^- \mid x) = \sigma\!\big(R(x,y^+) - R(x,y^-)\big) $$
+        </div></div>
+        <p>Train by maximizing the likelihood (equivalently minimizing the negative log‑likelihood in the section above).</p>
+
+        <h4>6.2 Advantages and baselines</h4>
+        <div class="scroll-indicator"><div class="math-equation">
+          $$ \hat{A}_t \approx R_\phi(x,y) - b(x) \quad \text{or} \quad \text{use GAE with a learned value head}. $$
+        </div></div>
+
+        <h4>6.3 KL‑penalized RL objective</h4>
+        <div class="scroll-indicator"><div class="math-equation">
+          $$ \max_\theta \; \mathbb{E}\Big[ R_\phi(x,y) \Big] \;-\; \beta \,\mathbb{E}\Big[\mathrm{KL}(\pi_\theta \,\|\, \pi_\text{ref})\Big] $$
+        </div></div>
+        <p>Interpret \(\beta\) as a “leash length”: higher means tighter to the reference model.</p>
+
+        <h4>6.4 Tiny numeric example (PPO clip)</h4>
+        <p>Suppose \(\hat{A}=+2\). If \(r=1.5\) and \(\epsilon=0.2\), then \(\text{clip}(r,0.8,1.2)=1.2\).
+           The PPO term uses <b>min</b>\((1.5\cdot 2,\; 1.2\cdot 2) = 2.4\) (clipped). Clipping avoids huge risky jumps.</p>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="code" style="color:blue;margin-top:35px;margin-bottom:30px;">7) Hands‑On: Toy RLHF in Code</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <h4>7.1 NumPy: simulate preferences & a tiny PPO‑ish step</h4>
+        <pre><code class="language-python">import numpy as np
+
+rng = np.random.default_rng(0)
+
+# synthetic "true" score for responses: f(y) = - (y-3)^2 + 10 (peak at y=3)
+def true_reward(y):
+    return - (y - 3.0)**2 + 10.0
+
+# policy: Gaussian over y with mean mu and fixed std
+mu = 0.0
+std = 1.0
+
+def sample_response(mu, std, n=64):
+    return rng.normal(mu, std, size=n)
+
+def kl_gaussians(mu_new, mu_old, std=1.0):
+    # KL(N(mu_new, std^2) || N(mu_old, std^2)) = ( (mu_old-mu_new)^2 )/(2*std^2)
+    return ((mu_old - mu_new)**2) / (2*std**2)
+
+beta = 0.1
+lr = 0.05
+
+for step in range(60):
+    y = sample_response(mu, std, n=128)
+    rewards = true_reward(y)
+
+    # scalar objective: mean reward - beta*KL to a reference (here: mu_ref=0 for demo)
+    mu_ref = 0.0
+    kl = kl_gaussians(mu, mu_ref, std)
+    J = rewards.mean() - beta * kl
+
+    # simple gradient wrt mu: d/dmu E[r(y)] for Gaussian ≈ E[r'(y)] by score function approximations (toy)
+    # here we cheat using finite diff on mu to keep it short:
+    eps = 1e-3
+    mu_plus = mu + eps
+    y2 = sample_response(mu_plus, std, n=2000)
+    grad_mu_reward = (true_reward(y2).mean() - rewards.mean()) / eps
+
+    grad_mu_kl = - beta * ( (mu_ref - mu) / (std**2) )  # d/dmu [ - beta * KL ] term
+
+    grad = grad_mu_reward + grad_mu_kl
+    mu += lr * grad
+
+    if step % 10 == 0:
+        print(f"step {step:02d}  mu={mu:.3f}  J={J:.3f}  KL={kl:.4f}")</code></pre>
+
+        <p class="mini">This toy shows how a KL penalty prevents the policy mean \(\mu\) from drifting too far from a reference, even as it chases higher reward.</p>
+
+        <h4>7.2 PyTorch: training a reward model with synthetic pairs</h4>
+        <pre><code class="language-python">import torch, torch.nn as nn, torch.optim as optim
+import math
+
+# Synthetic features for (x, y). We'll keep it 1D: y is the response scalar; x is ignored.
+# Label pairs via true_reward as above; create (y_plus, y_minus) with preference y_plus > y_minus.
+
+def true_reward_t(y):
+    return - (y - 3.0)**2 + 10.0
+
+class TinyRM(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.net = nn.Sequential(nn.Linear(1, 32), nn.Tanh(), nn.Linear(32, 1))
+    def forward(self, y):  # y: [B, 1]
+        return self.net(y).squeeze(-1)  # [B]
+
+rm = TinyRM()
+opt = optim.Adam(rm.parameters(), lr=1e-3)
+sigm = nn.Sigmoid()
+
+for epoch in range(2000):
+    y_plus  = torch.randn(256,1)*1.5 + 3.0  # around optimum
+    y_minus = torch.randn(256,1)*1.5 + 0.0  # less optimal
+    # enforce plus is really better (swap if needed)
+    tp = true_reward_t(y_plus).squeeze(-1)
+    tm = true_reward_t(y_minus).squeeze(-1)
+    swap = (tm > tp).nonzero(as_tuple=True)[0]
+    y_plus[swap], y_minus[swap] = y_minus[swap].clone(), y_plus[swap].clone()
+
+    r_plus  = rm(y_plus)
+    r_minus = rm(y_minus)
+    logits = r_plus - r_minus
+    loss = - torch.log(sigm(logits) + 1e-9).mean()
+
+    opt.zero_grad()
+    loss.backward()
+    opt.step()
+
+    if epoch % 400 == 0:
+        with torch.no_grad():
+            test = torch.linspace(-2, 8, 21).view(-1,1)
+            rhat = rm(test)
+        print(f"epoch {epoch}  loss={loss.item():.4f}  rhat@3≈{float(rhat[ test.squeeze()==3 ] if (test==3).any() else rhat[10]):.3f}")</code></pre>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="practice" style="color:blue;margin-top:35px;margin-bottom:30px;">8) Practical Guidelines (What Actually Matters)</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <ul class="checklist">
+          <li><b>Data quality > everything.</b> Clear rater instructions, examples of harmless refusal, factual grounding.</li>
+          <li><b>Diversity of prompts.</b> Include safety‑critical, multilingual, edge cases, and “jailbreak‑like” attempts.</li>
+          <li><b>KL targeting.</b> Start with moderate \(\beta\) (or target_kl≈0.05–0.2), monitor quality drift & perplexity.</li>
+          <li><b>Reward shaping.</b> Normalize per batch; inspect reward histograms; watch for collapse.</li>
+          <li><b>Evaluation.</b> Human eval on helpfulness/harmlessness/truthfulness; adversarial tests; toxicity & bias audits.</li>
+          <li><b>No‑decay groups.</b> If you use decoupled weight decay (AdamW), don’t decay layer norms/biases.</li>
+        </ul>
+
+        <div class="warn mini">
+          <b>Reward hacking:</b> models learn to exploit RM weaknesses (e.g., being overly verbose). Mix automatic + human spot checks and keep RMs fresh.
+        </div>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="cases" style="color:blue;margin-top:35px;margin-bottom:30px;">9) Case Studies (High‑Level)</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <ul>
+          <li><b>Instruction‑tuned LMs (e.g., Instruct‑style):</b> SFT on human‑written answers → RM from preferences → PPO with KL → big jumps in helpfulness.</li>
+          <li><b>Safety layers:</b> Refusal training + harm policies; special prompts for safety‑first behavior.</li>
+          <li><b>“Constitutional AI” (Anthropic‑style):</b> Replace part of human feedback with a written constitution; the model critiques & revises itself to comply.</li>
+        </ul>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="alt" style="color:blue;margin-top:35px;margin-bottom:30px;">10) RLHF Alternatives & Cousins</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <h4>10.1 DPO — Direct Preference Optimization</h4>
+        <p>Optimizes policy <em>directly</em> from preferences without an explicit reward model or PPO rollouts. A common simplified loss (conceptually) uses logits from the current policy against a reference:</p>
+        <div class="scroll-indicator"><div class="math-equation">
+          $$ \mathcal{L}_\text{DPO} = - \mathbb{E}\left[ \log \sigma\!\left(\beta\big(\log \pi_\theta(y^+|x) - \log \pi_\theta(y^-|x) - (\log \pi_\text{ref}(y^+|x) - \log \pi_\text{ref}(y^-|x))\big)\right) \right] $$
+        </div></div>
+        <p>Pros: simpler pipeline; no PPO. Cons: different trade‑offs; relies on good reference and careful β/temperature choices.</p>
+
+        <h4>10.2 RLAIF — Reinforcement Learning from <i>AI</i> Feedback</h4>
+        <p>Use a strong “teacher” model to label preferences instead of humans. Scales cheaply, but risks transferring teacher biases.</p>
+
+        <h4>10.3 Constitutional AI</h4>
+        <p>Use principles (a “constitution”) to guide self‑critique and revision. Reduces human labor; works well for safety style constraints.</p>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="beyond" style="color:blue;margin-top:35px;margin-bottom:30px;">11) Beyond Chatbots: Where RLHF Shows Up</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <ul>
+          <li><b>Summarization:</b> preferences for faithful, concise summaries vs. verbose/hallucinated ones.</li>
+          <li><b>Search & ranking:</b> pairwise ranking of results tuned to user satisfaction signals.</li>
+          <li><b>Robotics:</b> human preferences over trajectories (preference‑based RL).</li>
+          <li><b>Vision‑language:</b> choose better captions or step‑by‑step rationales.</li>
+        </ul>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="video" style="color:blue;margin-top:35px;margin-bottom:30px;">12) Watch: A Clear RLHF Explainer</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <div class="video-container" style="width:95%;margin:0 auto;">
+          <!-- Replace the src with your favorite high-quality RLHF explainer -->
+          <iframe src="https://www.youtube.com/embed/qPN_XZcJf_s"
+                  title="RLHF Explained — Intro & Intuition"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
+        </div>
+        <br/>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="glossary" style="color:blue;margin-top:35px;margin-bottom:30px;">13) Mini‑Glossary</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <ul>
+          <li><b>RLHF</b> — <a href="https://en.wikipedia.org/wiki/Reinforcement_learning" target="_blank">Reinforcement Learning</a> with <a href="https://en.wikipedia.org/wiki/Crowdsourcing" target="_blank">human feedback</a> via preferences.</li>
+          <li><b>SFT</b> — Supervised Fine‑Tuning: instruction data to teach baseline behavior.</li>
+          <li><b>Reward Model</b> — Model that scores responses so preferred ones rank higher.</li>
+          <li><b>PPO</b> — Proximal Policy Optimization for stable policy updates.</li>
+          <li><b>KL Penalty</b> — Regularizer that keeps policy close to a reference model.</li>
+          <li><b>DPO</b> — Direct Preference Optimization; skip explicit RM/PPO.</li>
+          <li><b>RLAIF</b> — RL from AI feedback (model labels preferences).</li>
+        </ul>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="refs" style="color:blue;margin-top:35px;margin-bottom:30px;">14) References & Further Reading</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <ol>
+          <li><a href="https://en.wikipedia.org/wiki/Reinforcement_learning" target="_blank">Wikipedia: Reinforcement learning</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Bradley%E2%80%93Terry_model" target="_blank">Wikipedia: Bradley–Terry model</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Proximal_policy_optimization" target="_blank">Wikipedia: Proximal Policy Optimization</a></li>
+          <li><a href="https://arxiv.org/abs/1706.03762" target="_blank">Vaswani et al. (2017) — Attention is All You Need</a></li>
+          <li><a href="https://arxiv.org/abs/2005.14165" target="_blank">Stiennon et al. (2020) — Learning to summarize with human feedback</a></li>
+          <li><a href="https://arxiv.org/abs/2305.18290" target="_blank">Rafailov et al. (2023) — Direct Preference Optimization</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Constitutional_AI" target="_blank">Constitutional AI (overview)</a></li>
+        </ol>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="faq" style="color:blue;margin-top:35px;margin-bottom:30px;">15) FAQ</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <h4>Q1. Is RLHF just “making models nice”?</h4>
+        <p>No. It tunes behavior to align with <em>human preferences</em> for helpfulness, safety, and clarity. That includes saying “no” when a request is harmful.</p>
+
+        <h4>Q2. Do I always need PPO?</h4>
+        <p>No. Methods like <b>DPO</b> avoid PPO by directly optimizing the policy from preferences. PPO is popular, but not mandatory.</p>
+
+        <h4>Q3. Why do we need a reference model for KL?</h4>
+        <p>To prevent the policy from drifting into degenerate modes that exploit the reward model. The reference (often SFT) anchors language quality.</p>
+
+        <h4>Q4. Can I use AI labelers instead of humans?</h4>
+        <p>Yes (RLAIF), but you inherit teacher biases. Many pipelines mix human and AI feedback.</p>
+
+        <h4>Q5. Is RLHF enough to solve “AI alignment”?</h4>
+        <p>No. It’s a practical tool that helps, but it doesn’t guarantee perfect truthfulness/safety. Use layered defenses and continuous evaluation.</p>
+      </div>
+    </div>
+
+    <!-- ---------- FOOTER ---------- -->
+    <footer class="footer">
+      <div class="waves">
+        <div class="wave" id="wave1"></div>
+        <div class="wave" id="wave2"></div>
+        <div class="wave" id="wave3"></div>
+      </div>
+      <div class="footer-elem-container">
+        <ul class="social-icon">
+          <li class="social-icon__item"><a class="social-icon__link" href="https://www.linkedin.com/in/hamoutni/" target="_blank"><ion-icon name="logo-linkedIn"></ion-icon></a></li>
+          <li class="social-icon__item"><a class="social-icon__link" href="https://www.kaggle.com/AnasHamoutni" target="_blank"><i class="fab fa-kaggle foote"></i></a></li>
+          <li class="social-icon__item"><a class="social-icon__link" href="https://github.com/AnasHamoutni" target="_blank"><ion-icon name="logo-github"></ion-icon></a></li>
+          <li class="social-icon__item"><a class="social-icon__link" href="https://x.com/AnasHamoutni" target="_blank">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 462.799" width="32" height="32" style="vertical-align:baseline;">
+              <path fill="#fff" fill-rule="nonzero" d="M403.229 0h78.506L310.219 196.04 512 462.799H354.002L230.261 301.007 88.669 462.799h-78.56l183.455-209.683L0 0h161.999l111.856 147.88L403.229 0zm-27.556 415.805h43.505L138.363 44.527h-46.68l283.99 371.278z"/>
+            </svg>
+          </a></li>
+        </ul>
+        <ul class="menu">
+          <li class="menu__item"><a class="menu__link" href="/index.html">Home</a></li>
+          <li class="menu__item"><a class="menu__link" href="/Projects.html">Projects</a></li>
+          <li class="menu__item"><a class="menu__link" href="/About-me.html">About me</a></li>
+          <li class="menu__item"><a class="menu__link" href="/Blog.html">Blog</a></li>
+          <li class="menu__item"><a class="menu__link" href="/Get-in-Touch.html">Get in Touch</a></li>
+          <li class="menu__item"><a class="menu__link" href="/Privacy-Policy.html">Privacy Policy</a></li>
+          <li class="menu__item"><a class="menu__link" href="/Terms-of-Service.html">Terms of Service</a></li>
+          <li class="menu__item"><a class="menu__link" href="/Cookie-Policy.html">Cookie Policy</a></li>
+        </ul>
+        <div class="p-foot-div">
+          <p>&copy;2025 Kudos AI • by Anas HAMOUTNI • All Rights Reserved</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- ---------- SCRIPTS ---------- -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" defer crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" crossorigin="anonymous"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script src='https://kit.fontawesome.com/d25a67fa19.js' crossorigin='anonymous' defer></script>
+    <script src="/index.js" defer></script>
+  </body>
+</html>

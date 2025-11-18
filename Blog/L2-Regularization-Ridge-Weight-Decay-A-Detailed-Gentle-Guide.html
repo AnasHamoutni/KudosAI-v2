@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Kudos AI | Blog | L2 Regularization (Ridge / Weight Decay) — A Beginner-Friendly Deep Dive</title>
+    <meta name="description"
+          content="An easy, careful introduction to L2 regularization (ridge / weight decay). Clear intuition, tiny numeric examples, step-by-step math, geometry, Bayesian view, how to pick lambda, and hands-on code with scikit-learn and PyTorch.">
+    <meta name="keywords"
+          content="L2 regularization explained simply, ridge regression beginner tutorial, weight decay AdamW, choose lambda ridge, bias variance tradeoff">
+
+    <!-- Template CSS & icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="/styles.css"/>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VCL644R1SZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-VCL644R1SZ');
+    </script>
+    <link rel="icon" type="image/x-icon" href="/Kudos_AI_favicon.png">
+
+    <!-- MathJax -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+      /* keep your template look */
+      .highlight{color:#007bff;font-weight:bold;}
+      p{margin-bottom:1em;}
+      .math-equation{text-align:center;margin:1em 0;font-family:"Courier New",monospace;}
+      pre{background:#f8f9fa;border:1px solid #ddd;padding:10px;border-radius:5px;overflow-x:auto;}
+      .video-container{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;background:#000;margin:0 auto;border-radius:12px;}
+      .video-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:12px;}
+      .image-container{text-align:center;margin:20px 0;}
+      .responsive-image{max-width:100%;height:auto;display:inline-block;border-radius:8px;}
+      .scroll-indicator{position:relative;overflow-x:auto;}
+      h3{text-align:center;}h4{text-align:left;}
+
+      /* gentle callouts */
+      .note{background:#eef7ff;border-left:4px solid #007bff;padding:10px;border-radius:4px;margin:14px 0;}
+      .tip {background:#fff7e6;border-left:4px solid #ffbf00;padding:10px;border-radius:4px;margin:14px 0;}
+      .warn{background:#ffecec;border-left:4px solid #ff4d4f;padding:10px;border-radius:4px;margin:14px 0;}
+      .checklist li{margin-bottom:.4em;}
+      .mini{font-size:.95em;color:#444;}
+      .toc a{color:#007bff;text-decoration:none;}
+      .toc a:hover{text-decoration:underline;}
+      .kbd{font-family:monospace;background:#f1f1f1;border:1px solid #ddd;border-radius:4px;padding:2px 6px;}
+      .boxed{border:1px solid #007bff;border-radius:6px;padding:8px 12px;background:#eef7ff;}
+      .eli5{background:#f6ffed;border-left:4px solid #52c41a;padding:10px;border-radius:4px;margin:14px 0;}
+      .example{background:#fafafa;border:1px dashed #ccc;border-radius:6px;padding:10px;margin:14px 0;}
+      .table-mini td,.table-mini th{padding:.4rem .6rem;}
+    </style>
+  </head>
+
+  <body>
+    <!-- ---------- NAVBAR ---------- -->
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color:white;">
+      <a class="navbar-brand" href="/index.html"><img width="180" src="/Kudos_AI_logo_transparent.png" alt="Kudos AI Logo"></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNavbarToggler10"
+              aria-controls="myNavbarToggler10" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="myNavbarToggler10">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item"><a class="nav-link" href="/index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Projects.html">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="/About-me.html">About me</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Blog.html">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Get-in-Touch.html">Get in Touch</a></li>
+        </ul>
+        <ul class="navbar-nav sm-icons mr-0 d-flex justify-content-center">
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://www.linkedin.com/in/hamoutni/"><i class="fa-brands fa-linkedin-in" style="margin-top:7px;"></i></a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://www.kaggle.com/anashamoutni"><i class="fab fa-kaggle"></i></a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://github.com/AnasHamoutni"><i class="fab fa-github" style="margin-top:7px;"></i></a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://x.com/anashamoutni"><i class="fab fa-x-twitter" style="margin-top:7px;"></i></a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- ---------- HERO IMAGE + TITLE ---------- -->
+    <div class="blogPost-div">
+      <img class="imgPost" loading="lazy"
+           src="What-is-Regularization.jpg"
+           alt="What is Regularization?"/>
+      <div class="blogPost-title-div">
+        <h2 class="blogPost-title">L2 Regularization (Ridge / Weight Decay) — A Beginner-Friendly Deep Dive</h2>
+      </div>
+
+      <!-- ---------- MAIN ARTICLE BODY ---------- -->
+      <div class="postBody-div">
+
+<!-- ===== ABSTRACT ===== -->
+<p><em>Overfitting is when a model memorizes noise instead of learning patterns. <span class="highlight"><a href="https://en.wikipedia.org/wiki/Tikhonov_regularization" target="_blank">L2 regularization</a></span> (ridge / weight decay) fixes a surprising amount of it with one idea: gently penalize large weights. In this guide we take it slow: a kid-level analogy, tiny numeric examples, the exact math, the geometry, the Bayesian story, how to pick <span class="highlight">λ</span>, and working Python code in <code>numpy</code>, <code>scikit-learn</code>, and <code>PyTorch</code>.</em></p>
+
+<!-- ===== ELI5 BOX ===== -->
+<div class="eli5">
+  <b>Explain Like I’m 5:</b> Imagine each model weight is a knob tied to a little rubber band that pulls it toward zero. If the knob goes too far, the band pulls back. This keeps the whole model from doing wild zig-zags, so it behaves better on new data.
+</div>
+
+<!-- ===== TOC ===== -->
+<div class="note toc">
+  <strong>Contents</strong> —
+  <a href="#problem">Why we need L2</a> ·
+  <a href="#what">Definition</a> ·
+  <a href="#ols-vs-ridge">From OLS to Ridge</a> ·
+  <a href="#update">Gradient & update (weight decay)</a> ·
+  <a href="#geometry">Geometry</a> ·
+  <a href="#bayes">Bayesian view</a> ·
+  <a href="#shrink">SVD shrinkage</a> ·
+  <a href="#choose">Choosing λ</a> ·
+  <a href="#tiny">Tiny numeric examples</a> ·
+  <a href="#demo-sklearn">Hands-on: scikit-learn</a> ·
+  <a href="#demo-pytorch">Hands-on: PyTorch (AdamW)</a> ·
+  <a href="#tips">Pitfalls & tips</a> ·
+  <a href="#video">Video</a> ·
+  <a href="#glossary">Glossary</a> ·
+  <a href="#refs">References</a> ·
+  <a href="#faq">FAQ</a>
+</div>
+
+<center><hr width="50%" class="solid"></center>
+<h3 id="problem" style="color:blue;margin-top:35px;margin-bottom:30px;">1) Why do we need L2?</h3>
+<center><hr width="50%" class="solid"></center>
+<div class="image-container">
+  <img src="overfiting-regularization.png" alt="Overfitting with regularization" class="responsive-image">
+</div>
+<p><b>Plain English.</b> Overfitting = great on training, poor on new data. It happens when the model uses very large, twitchy weights to chase noise.</p>
+<p><b>Fix.</b> Add a small penalty for large weights; the model still fits the data, but prefers simpler settings unless data begs otherwise.</p>
+
+<div class="example">
+<b>Visual intuition:</b> Without L2, a high-degree polynomial can wiggle through every point. With L2, it smooths out and follows the trend.
+</div>
+
+<center><hr width="50%" class="solid"></center>
+<h3 id="what" style="color:blue;margin-top:35px;margin-bottom:30px;">2) What L2 regularization actually is</h3>
+<center><hr width="50%" class="solid"></center>
+
+<p>We add the squared size of the weights to the loss. A common definition (nice for gradients) is with a <b>1/2</b> factor:</p>
+
+<div class="math-equation">
+$$
+\boxed{
+\mathcal{L}_\lambda(\mathbf{w}) =
+\mathcal{L}_\text{data}(\mathbf{w}) \;+\; \frac{\lambda}{2}\,\|\mathbf{w}\|_2^2
+}
+$$
+</div>
+
+<ul class="checklist">
+  <li>\(\lambda \gt 0\) controls the strength of the pull toward zero.</li>
+  <li>We typically <b>do not</b> regularize the bias/intercept term.</li>
+  <li>For classification (e.g., logistic regression), it’s the same idea—add \(\frac{\lambda}{2}\|w\|^2\) to the data loss.</li>
+</ul>
+
+<center><hr width="50%" class="solid"></center>
+<h3 id="ols-vs-ridge" style="color:blue;margin-top:35px;margin-bottom:30px;">3) From OLS to Ridge: the step-by-step math</h3>
+<center><hr width="50%" class="solid"></center>
+
+<p><b>Ordinary Least Squares (OLS).</b> With design matrix \(X\in\mathbb{R}^{n\times p}\) and targets \(\mathbf{y}\in\mathbb{R}^n\):</p>
+
+<div class="math-equation">
+$$
+\mathcal{L}_\text{OLS}(\mathbf{w})=\frac{1}{2n}\,\|\mathbf{y}-X\mathbf{w}\|_2^2
+\quad\Rightarrow\quad
+\nabla \mathcal{L}_\text{OLS}=\frac{1}{n}X^\top(X\mathbf{w}-\mathbf{y}).
+$$
+</div>
+
+<p><b>Ridge (OLS + L2).</b> Add \(\frac{\lambda}{2}\|\mathbf{w}\|^2\):</p>
+
+<div class="math-equation">
+$$
+\mathcal{L}_\lambda(\mathbf{w})=\frac{1}{2n}\,\|\mathbf{y}-X\mathbf{w}\|^2+\frac{\lambda}{2}\|\mathbf{w}\|^2,
+\quad
+\nabla \mathcal{L}_\lambda=\frac{1}{n}X^\top(X\mathbf{w}-\mathbf{y})+\lambda\mathbf{w}.
+$$
+</div>
+
+<p>Setting the gradient to zero gives the <b>closed form</b>:</p>
+
+<div class="boxed">
+\[
+\boxed{\;\hat{\mathbf{w}}_\text{ridge}=(X^\top X+n\lambda I)^{-1}X^\top\mathbf{y}\;}
+\]
+</div>
+
+<p class="mini">If you define OLS without the \(1/n\), the formula becomes \((X^\top X+\lambda I)^{-1}X^\top y\). Both are common; we’ll keep the \(n\lambda\) version consistent with the \(1/(2n)\) normalization above.</p>
+
+<center><hr width="50%" class="solid"></center>
+<h3 id="update" style="color:blue;margin-top:35px;margin-bottom:30px;">4) Gradient update & “weight decay” (why the weights shrink)</h3>
+<center><hr width="50%" class="solid"></center>
+
+<p>Gradient descent with learning rate \(\eta\) on \(\mathcal{L}_\lambda\) gives:</p>
+
+<div class="math-equation">
+$$
+\mathbf{w}\leftarrow \mathbf{w}-\eta\left(\frac{1}{n}X^\top(X\mathbf{w}-\mathbf{y})+\lambda\mathbf{w}\right)
+\;=\;
+(1-\eta\lambda)\,\mathbf{w} \;-\; \eta\cdot \frac{1}{n}X^\top(X\mathbf{w}-\mathbf{y}).
+$$
+</div>
+
+<p><b>Key effect.</b> Every step multiplies \(\mathbf{w}\) by \((1-\eta\lambda)\). That’s why L2 in optimizers is often called <b>weight decay</b>.</p>
+
+<div class="tip mini">
+<b>PyTorch/AdamW note.</b> AdamW <em>decouples</em> this decay from the adaptive gradient, so the shrinkage is clean: <code>w ← w − η·(∇data) − η·wd·w</code> where <code>wd</code> is the weight decay value (like λ).
+</div>
+
+<center><hr width="50%" class="solid"></center>
+<h3 id="geometry" style="color:blue;margin-top:35px;margin-bottom:30px;">5) Geometry: ellipse meets circle (why solutions get “rounded”)</h3>
+<center><hr width="50%" class="solid"></center>
+
+<p>OLS loss contours are ellipses in weight space; the L2 constraint \(\|\mathbf{w}\|^2\le c\) is a circle (sphere in higher-D). The optimum is where the smallest ellipse first <b>touches</b> the circle—tangency.</p>
+
+<div class="image-container">
+  <img src="geometric-picture-ridge.png" alt="Ellipse of OLS meeting circle of L2 constraint at tangency" class="responsive-image">
+</div>
+
+<p><b>L2 vs L1.</b> L1 is a diamond and loves corners → exact zeros (sparsity). L2 is a circle and shrinks everything smoothly (rarely exact zero).</p>
+
+<center><hr width="50%" class="solid"></center>
+<h3 id="bayes" style="color:blue;margin-top:35px;margin-bottom:30px;">6) Bayesian view: Gaussian prior ⇒ ridge</h3>
+<center><hr width="50%" class="solid"></center>
+
+<p>Assume noise \( \varepsilon\sim\mathcal{N}(0,\sigma^2I) \) and a prior \( \mathbf{w}\sim\mathcal{N}(\mathbf{0},\tau^2 I) \). Maximizing the posterior (MAP) yields ridge with \( \lambda=\sigma^2/\tau^2 \):</p>
+
+<div class="math-equation">
+$$
+\min_{\mathbf{w}} \frac{1}{2\sigma^2}\|\mathbf{y}-X\mathbf{w}\|^2 + \frac{1}{2\tau^2}\|\mathbf{w}\|^2
+\quad\Longleftrightarrow\quad
+\lambda=\frac{\sigma^2}{\tau^2}.
+$$
+</div>
+
+<p><b>Interpretation.</b> Larger noise \(\sigma^2\) or stronger belief that weights are small (small \(\tau^2\)) → bigger \(\lambda\).</p>
+
+<center><hr width="50%" class="solid"></center>
+<h3 id="shrink" style="color:blue;margin-top:35px;margin-bottom:30px;">7) SVD shrinkage: how ridge dampens weak directions</h3>
+<center><hr width="50%" class="solid"></center>
+
+<p>Let \(X=U\Sigma V^\top\) with singular values \(\sigma_1\ge\dots\ge\sigma_r\). In this basis, ridge scales components by:</p>
+
+<div class="math-equation">
+$$
+\text{shrink factor } \;\; \frac{\sigma_j}{\sigma_j^2+n\lambda}
+\quad\in(0,1].
+$$
+</div>
+
+<p>Small \(\sigma_j\) (ill-conditioned directions) get shrunk most → better stability and less overfitting.</p>
+
+<center><hr width="50%" class="solid"></center>
+<h3 id="choose" style="color:blue;margin-top:35px;margin-bottom:30px;">8) Choosing λ (practical and painless)</h3>
+<center><hr width="50%" class="solid"></center>
+
+<table class="table table-bordered table-mini">
+  <thead class="thead-light">
+    <tr><th>Method</th><th>How</th><th>Good starting point</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Cross-validation</td><td>Scan λ on a log grid; pick best validation score</td><td>\(10^{-4}\) … \(10^{1}\)</td></tr>
+    <tr><td>RidgeCV</td><td>Built-in scikit-learn cross-validated ridge</td><td>Decades grid, e.g., [1e-4, …, 10]</td></tr>
+    <tr><td>Empirical Bayes</td><td>Maximize marginal likelihood (advanced)</td><td>Use when you know noise priors</td></tr>
+  </tbody>
+</table>
+
+<div class="tip mini">
+<b>Always standardize features first.</b> Otherwise λ penalizes features unevenly because of scale differences.
+</div>
+
+<center><hr width="50%" class="solid"></center>
+<h3 id="tiny" style="color:blue;margin-top:35px;margin-bottom:30px;">9) Tiny numeric examples (feel the effect)</h3>
+<center><hr width="50%" class="solid"></center>
+
+<div class="example">
+<b>1D toy.</b> Fit \(y\approx w x\) to two points: (x,y) = (1, 2) and (3, 2).  
+OLS solution: \(w_\text{OLS}=\frac{\sum x_i y_i}{\sum x_i^2}=\frac{1\cdot2+3\cdot2}{1^2+3^2}=\frac{8}{10}=0.8\).  
+Ridge with λ=2 (and our \(1/(2n)\) convention → \(n\lambda=4\)):  
+\[
+w_\text{ridge}=\frac{\sum x_i y_i}{\sum x_i^2+n\lambda}=\frac{8}{10+4}=0.571\ldots
+\]  
+The ridge weight is smaller → predictions are less extreme.
+</div>
+
+<div class="example">
+<b>Update step feeling.</b> Suppose \(w=1.0\), \(\eta=0.1\), \(\lambda=0.5\). The decay factor is \(1-\eta\lambda=1-0.05=0.95\). Even before the gradient term, the weight shrinks to \(0.95\). With repeated steps, weights that the data doesn’t strongly support will keep shrinking.
+</div>
+
+<center><hr width="50%" class="solid"></center>
+<h3 id="demo-sklearn" style="color:blue;margin-top:35px;margin-bottom:30px;">10) Hands-on (scikit-learn): overfit polynomial vs ridge/RidgeCV</h3>
+<center><hr width="50%" class="solid"></center>
+
+<pre><code class="language-python">import numpy as np, matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures
+from sklearn.linear_model import LinearRegression, Ridge, RidgeCV
+from sklearn.pipeline import make_pipeline
+
+# 1) Data: noisy sine
+rng = np.random.default_rng(42)
+X = np.linspace(0, 10, 80)[:, None]
+y = np.sin(X).ravel() + 0.5 * rng.normal(size=80)
+
+# 2) Overfit baseline: degree-15 OLS (no regularization)
+ols = make_pipeline(StandardScaler(with_mean=False),  # keep bias out; poly adds bias if include_bias=True
+                    PolynomialFeatures(15, include_bias=False),
+                    LinearRegression())
+ols.fit(X, y)
+
+# 3) Ridge with a fixed alpha
+ridge = make_pipeline(PolynomialFeatures(15, include_bias=False),
+                      StandardScaler(),        # scale features -> crucial
+                      Ridge(alpha=10.0, fit_intercept=True, random_state=0))
+ridge.fit(X, y)
+
+# 4) RidgeCV to pick alpha automatically (across decades)
+alphas = np.logspace(-4, 1, 20)
+ridgecv = make_pipeline(PolynomialFeatures(15, include_bias=False),
+                        StandardScaler(),
+                        RidgeCV(alphas=alphas, store_cv_values=False))
+ridgecv.fit(X, y)
+print("Best alpha from CV:", ridgecv.named_steps['ridgecv'].alpha_)
+
+# 5) Plot
+Xp = np.linspace(0, 10, 400)[:, None]
+plt.figure(figsize=(8,4))
+plt.scatter(X, y, s=15, c='k', label='data')
+plt.plot(Xp, ols.predict(Xp),    'r--', label='deg-15 OLS (overfit)')
+plt.plot(Xp, ridge.predict(Xp),  'b-',  label='deg-15 Ridge (α=10)')
+plt.plot(Xp, ridgecv.predict(Xp),'g-',  label='RidgeCV (best α)')
+plt.legend(); plt.tight_layout(); plt.show()</code></pre>
+
+<p><b>What to look for.</b> OLS wiggles between points; Ridge yields a smoother curve; RidgeCV often lands on a value similar to what you’d choose by eye.</p>
+
+<center><hr width="50%" class="solid"></center>
+<h3 id="demo-pytorch" style="color:blue;margin-top:35px;margin-bottom:30px;">11) Hands-on (PyTorch): weight decay with proper parameter groups</h3>
+<center><hr width="50%" class="solid"></center>
+
+<pre><code class="language-python">import torch, torch.nn as nn
+torch.manual_seed(0)
+
+# Simple dataset: y = 2x + noise
+N = 256
+x = torch.linspace(-3, 3, N).unsqueeze(1)
+y = 2*x + 0.7*torch.randn_like(x)
+
+# Tiny model
+model = nn.Sequential(nn.Linear(1, 32), nn.ReLU(), nn.Linear(32, 1))
+
+# Parameter groups: decay weights, DON'T decay biases or norms
+decay, no_decay = [], []
+for name, p in model.named_parameters():
+    if p.requires_grad:
+        if name.endswith(".bias"):
+            no_decay.append(p)
+        else:
+            decay.append(p)
+
+optim = torch.optim.AdamW([
+    {'params': decay,    'weight_decay': 1e-2},
+    {'params': no_decay, 'weight_decay': 0.0}
+], lr=1e-3)
+
+loss_fn = nn.MSELoss()
+
+for step in range(2000):
+    optim.zero_grad()
+    pred = model(x)
+    loss = loss_fn(pred, y)
+    loss.backward()
+    optim.step()
+    if step % 400 == 0:
+        print(f"step {step:4d}  loss={loss.item():.4f}")</code></pre>
+
+<p><b>Why groups?</b> Decaying biases/LayerNorm often hurts performance. Most training recipes decay only the “real capacity” weights (linear/conv kernels).</p>
+
+<center><hr width="50%" class="solid"></center>
+<h3 id="tips" style="color:blue;margin-top:35px;margin-bottom:30px;">12) Common pitfalls & quick fixes</h3>
+<center><hr width="50%" class="solid"></center>
+
+<ul class="checklist">
+  <li><b>Not scaling features.</b> Fix: <code>StandardScaler()</code> before ridge.</li>
+  <li><b>Regularizing the bias.</b> Fix: exclude bias/intercept from L2.</li>
+  <li><b>Too big λ → underfit.</b> Training and validation both poor; reduce λ.</li>
+  <li><b>Too small λ → overfit.</b> Training great, validation poor; increase λ.</li>
+  <li><b>Using Adam instead of AdamW.</b> Prefer AdamW to decouple weight decay.</li>
+</ul>
+
+<div class="tip mini">
+<b>Rule of thumb:</b> If validation error is noisy/unstable, try a slightly larger λ. If it’s stable but high, reduce λ (or increase model capacity).
+</div>
+
+<center><hr width="50%" class="solid"></center>
+<h3 id="video" style="color:blue;margin-top:35px;margin-bottom:30px;">13) Watch: StatQuest on Ridge</h3>
+<center><hr width="50%" class="solid"></center>
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/Q81RR3yKn30"
+          title="StatQuest: Ridge Regression"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen></iframe>
+</div>
+<br/>
+
+<center><hr width="50%" class="solid"></center>
+<h3 id="glossary" style="color:blue;margin-top:35px;margin-bottom:30px;">14) Mini-Glossary</h3>
+<center><hr width="50%" class="solid"></center>
+
+<ul>
+  <li><b>Regularization</b> — discourage overly complex models to improve generalization.</li>
+  <li><b>L2 / Ridge</b> — penalize squared weights; smooth shrinkage.</li>
+  <li><b>L1 / Lasso</b> — penalize absolute weights; encourages exact zeros.</li>
+  <li><b>Weight decay</b> — the optimizer form of L2: multiply weights by <span class="kbd">(1 − ηλ)</span> each step (plus gradient).</li>
+  <li><b>Bias–variance</b> — small extra bias can reduce variance a lot → better test error.</li>
+</ul>
+
+<center><hr width="50%" class="solid"></center>
+<h3 id="refs" style="color:blue;margin-top:35px;margin-bottom:30px;">15) References & Further Reading</h3>
+<center><hr width="50%" class="solid"></center>
+
+<ol>
+  <li>Hoerl & Kennard (1970). <em>Ridge Regression: Biased Estimation for Nonorthogonal Problems</em>. Technometrics.</li>
+  <li>Hastie, Tibshirani, Friedman (2009). <em>The Elements of Statistical Learning</em>, Ch. 3 & 7.</li>
+  <li>Bishop (2006). <em>Pattern Recognition and Machine Learning</em>, Ch. 3 & 7.</li>
+  <li>Loshchilov & Hutter (2019). <em>Decoupled Weight Decay Regularization</em> (AdamW).</li>
+  <li>Wikipedia: <a href="https://en.wikipedia.org/wiki/Ridge_regression" target="_blank">Ridge regression</a>, <a href="https://en.wikipedia.org/wiki/Tikhonov_regularization" target="_blank">Tikhonov regularization</a>, <a href="https://en.wikipedia.org/wiki/Bias%E2%80%93variance_tradeoff" target="_blank">Bias–variance trade-off</a>.</li>
+</ol>
+
+<center><hr width="50%" class="solid"></center>
+<h3 id="faq" style="color:blue;margin-top:35px;margin-bottom:30px;">16) FAQ</h3>
+<center><hr width="50%" class="solid"></center>
+
+<h4>Q1. Should I use L2 for classification (logistic regression)?</h4>
+<p>Yes. Add \(\frac{\lambda}{2}\|w\|^2\) to the logistic loss. It improves stability and generalization.</p>
+
+<h4>Q2. Do I regularize the bias?</h4>
+<p>Usually no. In scikit-learn, that’s handled automatically; in PyTorch, exclude bias/LayerNorm from weight decay via parameter groups (see code above).</p>
+
+<h4>Q3. Is L2 better than L1?</h4>
+<p>Different goals. L2 = stability and smooth shrinkage (keeps most features). L1 = sparsity (feature selection). Elastic Net mixes both.</p>
+
+<h4>Q4. How large should λ be?</h4>
+<p>Start with cross-validation over decades (\(10^{-4}\) … \(10^{1}\)), standardize features, and let RidgeCV pick the winner.</p>
+
+      </div> <!-- /postBody-div -->
+    </div> <!-- /blogPost-div -->
+
+    <!-- ---------- FOOTER ---------- -->
+    <footer class="footer">
+      <div class="waves">
+        <div class="wave" id="wave1"></div>
+        <div class="wave" id="wave2"></div>
+        <div class="wave" id="wave3"></div>
+      </div>
+      <div class="footer-elem-container">
+        <ul class="social-icon">
+          <li class="social-icon__item"><a class="social-icon__link" href="https://www.linkedin.com/in/hamoutni/" target="_blank"><ion-icon name="logo-linkedIn"></ion-icon></a></li>
+          <li class="social-icon__item"><a class="social-icon__link" href="https://www.kaggle.com/anashamoutni" target="_blank"><i class="fab fa-kaggle foote"></i></a></li>
+          <li class="social-icon__item"><a class="social-icon__link" href="https://github.com/AnasHamoutni" target="_blank"><ion-icon name="logo-github"></ion-icon></a></li>
+          <li class="social-icon__item"><a class="social-icon__link" href="https://x.com/anashamoutni" target="_blank">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 462.799" width="32" height="32" style="vertical-align:baseline;"><path fill="#fff" fill-rule="nonzero" d="M403.229 0h78.506L310.219 196.04 512 462.799H354.002L230.261 301.007 88.669 462.799h-78.56l183.455-209.683L0 0h161.999l111.856 147.88L403.229 0zm-27.556 415.805h43.505L138.363 44.527h-46.68l283.99 371.278z"/></svg>
+          </a></li>
+        </ul>
+    <ul class="menu">
+      <li class="menu__item"><a class="menu__link" href="/index.html">Home</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Projects.html">Projects</a></li>
+      <li class="menu__item"><a class="menu__link" href="/About-me.html">About me</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Blog.html">Blog</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Get-in-Touch.html">Get in Touch</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Privacy-Policy.html">Privacy Policy</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Terms-of-Service.html">Terms of Service</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Cookie-Policy.html">Cookie Policy</a></li>
+    </ul>
+<div class="p-foot-div">
+    <p>&copy;2025 Kudos AI • by Anas HAMOUTNI • All Rights Reserved</p>
+</div>
+</div>
+    </footer>
+
+    <!-- ---------- SCRIPTS ---------- -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script src='https://kit.fontawesome.com/d25a67fa19.js' crossorigin='anonymous' defer></script>
+    <script src="/index.js" defer></script>
+  </body>
+</html>

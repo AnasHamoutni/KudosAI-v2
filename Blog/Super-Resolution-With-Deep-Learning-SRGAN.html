@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Kudos AI | Blog | Super resolution with Deep Learning : SRGAN</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css"/>
+
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-VCL644R1SZ"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+
+			gtag('config', 'G-VCL644R1SZ');
+		</script>    
+
+    <link rel="icon" type="image/x-icon" href="Kudos_AI_favicon.png">
+
+  </head>
+	 <style>
+      /* --- keep sample styles --- */
+      .highlight{color:#007bff;font-weight:bold;}
+      p{margin-bottom:1em;}
+      .math-equation{text-align:center;margin:1em 0;}
+      pre{background:#f8f9fa;border:1px solid #ddd;padding:10px;border-radius:5px;overflow-x:auto;}
+      .video-container{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;background:#000;margin:0 auto;border-radius:12px;}
+      .video-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:12px;}
+      .image-container{text-align:center;margin:20px 0;}
+      .responsive-image{max-width:100%;height:auto;display:inline-block;border-radius:8px;}
+      .scroll-indicator{position:relative;overflow-x:auto;}
+      .math-equation{font-family:"Courier New",monospace;padding:5px;border-radius:4px;display:block;max-width:100%;white-space:nowrap;background:transparent;text-align:center;margin:10px auto;}
+      h3{text-align:center;}h4{text-align:left;}
+    </style>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: white;">
+      <a class="navbar-brand" href="/index.html"><img width=180px src="Kudos_AI_logo_transparent.png"></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNavbarToggler10" aria-controls="myNavbarToggler10" aria-expanded="false" aria-label="Toggle navigation">
+
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="myNavbarToggler10">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Projects.html">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/About-me.html">About me</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Blog.html">Blog</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Get-in-Touch.html">Get in Touch</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav sm-icons mr-0 d-flex justify-content-center">
+              <li class="nav-item"><a class="nav-link" target=”_blank” href="https://www.linkedin.com/in/hamoutni/"><i class="fa-brands fa-linkedin-in" style="margin-top: 7px;"></i></a></li>
+              <li class="nav-item"><a class="nav-link" target=”_blank”  href="https://www.kaggle.com/anashamoutni"><i class="fab fa-kaggle"></i></a></li>
+              <li class="nav-item"><a class="nav-link" target=”_blank” href="https://github.com/AnasHamoutni"><i class="fab fa-github" style="margin-top: 7px;"></i></a></li>
+              <li class="nav-item"><a class="nav-link" target=”_blank”  href="https://x.com/anashamoutni"><i class="fab fa-x-twitter" style="margin-top: 7px;"></i></a></li>
+          </ul>
+        </div>
+    </nav>
+
+<div class="blogPost-div">
+
+<img class="imgPost" loading="lazy" src="super-resolution.jpg" alt="Super resolution Image" />
+<div class="blogPost-title-div"><h2 class="blogPost-title">Super resolution with Deep Learning: SRGAN</h2></div>
+<div class="postBody-div">
+
+<p><span style="color:blue">The Super Resolution GAN</span> (<span style="color:red">SRGAN</span>) is a <a href="https://en.wikipedia.org/wiki/Deep_learning" target="_blank">deep learning</a> algorithm whose objective is to improve the quality of an image. It belongs to the family of <span style="color:red">GAN</span>s (<a href="https://en.wikipedia.org/wiki/Generative_adversarial_network" target="_blank">Generative Adversarial Networks</a>).</br></br> 
+
+In this article, we will first discuss the background of <span style="color:red">image super-resolution</span> and the different <span style="color:red">deep learning</span> algorithms used for <a href="https://en.wikipedia.org/wiki/Digital_image_processing" target="_blank">image processing</a>. We will then see more precisely what a <span style="color:red">GAN</span> is and how it works, before diving into the specific architecture of <span style="color:red">SRGAN</span>. Finally, we will explore its applications, limitations, and future directions.</p>
+
+<center><hr align="center" width="50%" class="solid"></center>
+<h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">- Why image super-resolution matters -</h4>
+<center><hr align="center" width="50%" class="solid"></center>
+
+<p>In today’s digital world, we are surrounded by images—from social media photos and surveillance videos to medical scans and satellite imagery. However, many of these images suffer from poor resolution due to compression, noise, or hardware limitations. Super-resolution aims to <span style="color:red">reconstruct high-quality images</span> from low-resolution inputs.</br></br>
+
+Traditional approaches to image enhancement included interpolation methods like <a href="https://en.wikipedia.org/wiki/Bilinear_interpolation" target="_blank">bilinear</a> or <a href="https://en.wikipedia.org/wiki/Bicubic_interpolation" target="_blank">bicubic interpolation</a>. While fast, these methods often produce blurry and unrealistic results because they cannot restore lost fine details. Deep learning, particularly <span style="color:red">CNNs</span> and <span style="color:red">GANs</span>, revolutionized the field by learning from vast datasets to hallucinate missing details, producing sharper and more natural-looking images.</p>
+
+
+<center><hr align="center" width="50%" class="solid"></center>
+<h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">- GANs and their functioning -</h4>
+<center><hr align="center" width="50%" class="solid"></center>
+
+<p>A <span style="color:red">GAN</span> is an algorithm capable of <span style="color:red">generating or transforming images</span>. It was introduced by <span style="color:blue"><a href="https://en.wikipedia.org/wiki/Ian_Goodfellow" target="_blank">Ian Goodfellow</a></span> in 2014 and has since transformed AI research.</br></br>
+
+GANs consist of two main components:</p>
+
+<ul>
+<li><b><span style="color:red">Generator</span></b>: Creates new images from random noise or low-resolution inputs. Its goal is to produce outputs that are indistinguishable from real images.</li>
+<li><b><span style="color:red">Discriminator</span></b>: Judges whether an image is real (from the dataset) or fake (produced by the generator). It acts as a binary classifier.</li>
+</ul>
+
+<p>These two networks are trained simultaneously in a <span style="color:red">minimax game</span>. The generator improves by learning to fool the discriminator, while the discriminator improves by learning to detect fakes. Over time, the generator becomes highly skilled at producing realistic images.</p>
+
+<img class="imgPost" loading="lazy" style="width:85%; margin-bottom:20px;"src="GAN.jpg">
+
+<p>There are many <span style="color:red">GAN variants</span>, each optimized for a specific use case. For instance, <a href="https://en.wikipedia.org/wiki/StyleGAN" target="_blank">StyleGAN</a> by NVIDIA generates hyper-realistic human faces. Conditional GANs (cGANs) generate images based on labels or attributes. CycleGANs perform style transfer, converting paintings to photos or horses to zebras. <span style="color:red">SRGAN</span> is the variant specialized for <b>super-resolution</b>.</p>
+
+
+<center><hr align="center" width="50%" class="solid"></center>
+<h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">- SRGAN: How the algorithm works -</h4>
+<center><hr align="center" width="50%" class="solid"></center>
+
+<p>Introduced in 2017 by <span style="color:blue">Ledig et al.</span>, SRGAN was the first framework capable of generating <span style="color:red">photo-realistic images</span> for 4x upscaling tasks. Its innovation lies in combining adversarial learning with perceptual loss functions derived from pretrained networks.</p>
+
+<p>The architecture includes three main components:</p>
+
+<h4 style="color:red">1. Generator</h4>
+<p>The generator is a deep residual network (ResNet) with multiple residual blocks. Each block includes convolutional layers, batch normalization, and <span style="color:red">Parametric ReLU</span> activations. The goal is to upsample low-resolution inputs (e.g., 64x64) into high-resolution outputs (e.g., 256x256) while adding realistic textures and edges.</p>
+
+<h4 style="color:red">2. Discriminator</h4>
+<p>The discriminator is a <span style="color:red">CNN</span> classifier trained to distinguish between real high-resolution images and generated ones. It provides adversarial feedback to push the generator toward realism.</p>
+
+<h4 style="color:red">3. VGG19 network</h4>
+<p>SRGAN introduces a perceptual loss based on <span style="color:blue">VGG19</span>, a pretrained CNN on ImageNet. Instead of comparing images pixel-by-pixel (which often yields blurry results), SRGAN compares <span style="color:red">feature maps</span> extracted by VGG19. This ensures the generated image not only matches in structure but also in high-level perceptual quality.</p>
+
+
+<center><hr align="center" width="50%" class="solid"></center>
+<h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">- Loss functions in SRGAN -</h4>
+<center><hr align="center" width="50%" class="solid"></center>
+
+<p>The effectiveness of SRGAN comes from its loss design:</p>
+
+<ul>
+<li><b>Content loss:</b> Based on VGG feature maps, ensures perceptual similarity to ground truth.</li>
+<li><b>Adversarial loss:</b> Encourages generator outputs that fool the discriminator, pushing realism.</li>
+<li><b>Total loss:</b> Weighted combination of content and adversarial loss, balancing structure with realism.</li>
+</ul>
+
+
+<center><hr align="center" width="50%" class="solid"></center>
+<h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">- Training SRGAN -</h4>
+<center><hr align="center" width="50%" class="solid"></center>
+
+<p>Training SRGAN requires:</p>
+
+<ol>
+<li><b>Dataset preparation:</b> Pairs of low- and high-resolution images (e.g., DIV2K, ImageNet subsets).</li>
+<li><b>Pretraining:</b> The generator is often pretrained with <span style="color:red">MSE loss</span> for stability.</li>
+<li><b>Adversarial training:</b> The generator and discriminator are trained alternately.</li>
+<li><b>Evaluation:</b> Metrics include <a href="https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio" target="_blank">PSNR</a>, <a href="https://en.wikipedia.org/wiki/Structural_similarity" target="_blank">SSIM</a>, and human perceptual studies.</li>
+</ol>
+
+
+<center><hr align="center" width="50%" class="solid"></center>
+<h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">- Applications of SRGAN -</h4>
+<center><hr align="center" width="50%" class="solid"></center>
+
+<ul>
+<li><b>Medical imaging:</b> Enhancing MRI, CT, and X-ray scans for better diagnosis.</li>
+<li><b>Satellite imagery:</b> Improving resolution for climate studies, agriculture, and defense.</li>
+<li><b>Forensics & surveillance:</b> Depixelating blurry faces in security footage.</li>
+<li><b>Entertainment:</b> Restoring old movies, video games, and anime to HD/4K quality.</li>
+<li><b>E-commerce:</b> Enhancing low-quality product images for online platforms.</li>
+</ul>
+
+
+<center><hr align="center" width="50%" class="solid"></center>
+<h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">- Limitations and improvements -</h4>
+<center><hr align="center" width="50%" class="solid"></center>
+
+<p>Although powerful, SRGAN has some limitations:</p>
+
+<ul>
+<li>Training is unstable and requires careful tuning.</li>
+<li>Artifacts like ringing or checkerboard patterns may appear.</li>
+<li>Performance depends heavily on training data quality.</li>
+</ul>
+
+<p>These issues led to improvements such as:</p>
+
+<ul>
+<li><b>ESRGAN:</b> Enhanced SRGAN with Residual-in-Residual Dense Blocks, producing sharper textures.</li>
+<li><b>Real-ESRGAN:</b> Designed for real-world low-quality images, handling noise and compression better.</li>
+</ul>
+
+
+<center><hr align="center" width="50%" class="solid"></center>
+<h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">- Code example (PyTorch) -</h4>
+<center><hr align="center" width="50%" class="solid"></center>
+
+<pre style="background:#1e1e1e;color:#dcdcdc;padding:15px;overflow-x:auto;">
+import torch
+import torch.nn as nn
+
+# Residual block for SRGAN
+class ResidualBlock(nn.Module):
+    def __init__(self, channels):
+        super(ResidualBlock, self).__init__()
+        self.conv1 = nn.Conv2d(channels, channels, 3, stride=1, padding=1)
+        self.bn1 = nn.BatchNorm2d(channels)
+        self.prelu = nn.PReLU()
+        self.conv2 = nn.Conv2d(channels, channels, 3, stride=1, padding=1)
+        self.bn2 = nn.BatchNorm2d(channels)
+
+    def forward(self, x):
+        residual = self.conv1(x)
+        residual = self.bn1(residual)
+        residual = self.prelu(residual)
+        residual = self.conv2(residual)
+        residual = self.bn2(residual)
+        return x + residual
+</pre>
+
+<p>This snippet shows how residual blocks are implemented in the generator. Stacking multiple such blocks allows SRGAN to model complex image textures.</p>
+
+
+<center><hr align="center" width="50%" class="solid"></center>
+<h4 style="text-align:center; color:blue; margin-bottom:30px; margin-top:35px;">- The future of SRGAN and super-resolution -</h4>
+<center><hr align="center" width="50%" class="solid"></center>
+
+<p>The field is rapidly evolving:</p>
+
+<ul>
+<li>Integration with <b>diffusion models</b> for even higher fidelity.</li>
+<li>Video super-resolution to upscale entire movies in real time.</li>
+<li>3D and volumetric image enhancement for AR/VR applications.</li>
+<li>On-device super-resolution for mobile and edge computing.</li>
+</ul>
+
+<p>Ultimately, SRGAN and its successors are paving the way for a future where any low-quality image can be transformed into a sharp, realistic representation—breaking the barriers of hardware limitations and unlocking new possibilities in science, media, and communication.</p>
+
+</div>
+
+<footer class="footer">
+    <div class="waves">
+      <div class="wave" id="wave1"></div>
+      <div class="wave" id="wave2"></div>
+      <div class="wave" id="wave3"></div>
+	
+    </div>
+    <div class="footer-elem-container">
+
+    <ul class="social-icon">
+      <li class="social-icon__item"><a class="social-icon__link" href="https://www.linkedin.com/in/hamoutni/" target="_blank">
+          <ion-icon name="logo-linkedIn"></ion-icon>
+        </a></li>
+        <li class="social-icon__item"><a class="social-icon__link" href="https://www.kaggle.com/AnasHamoutni" target="_blank">
+          <i class="fab fa-kaggle foote"></i>
+        </a></li>
+      <li class="social-icon__item"><a class="social-icon__link" href="https://github.com/AnasHamoutni" target="_blank">
+          <ion-icon name="logo-github"></ion-icon>
+        </a></li>
+      <li class="social-icon__item"><a class="social-icon__link" href="https://x.com/AnasHamoutni" target="_blank">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 462.799" width="32" height="32" style="vertical-align: baseline;">
+							<path fill="#fff" fill-rule="nonzero" d="M403.229 0h78.506L310.219 196.04 512 462.799H354.002L230.261 301.007 88.669 462.799h-78.56l183.455-209.683L0 0h161.999l111.856 147.88L403.229 0zm-27.556 415.805h43.505L138.363 44.527h-46.68l283.99 371.278z"/>
+						</svg>
+				</a></li>
+    </ul>
+    <ul class="menu">
+      <li class="menu__item"><a class="menu__link" href="/index.html">Home</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Projects.html">Projects</a></li>
+      <li class="menu__item"><a class="menu__link" href="/About-me.html">About me</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Blog.html">Blog</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Get-in-Touch.html">Get in Touch</a></li>
+      <li class="menu__item"><a class="menu__link" href="/Privacy-Policy.html">Privacy Policy</a></li>
+	  <li class="menu__item"><a class="menu__link" href="/Terms-of-Service.html">Terms of Service</a></li>
+	  <li class="menu__item"><a class="menu__link" href="/Cookie-Policy.html">Cookie Policy</a></li>
+    </ul>
+<div class="p-foot-div">
+    <p>&copy;2025 Kudos AI • by Anas HAMOUTNI • All Rights Reserved</p>
+</div>
+</div>
+  </footer>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js" defer></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script src='https://kit.fontawesome.com/d25a67fa19.js' crossorigin='anonymous' defer></script>
+    <script src="/index.js" defer></script>
+</body>
+</html>

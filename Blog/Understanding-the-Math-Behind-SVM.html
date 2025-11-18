@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Kudos AI | Blog | Support Vector Machines: Understanding the Math Behind SVM</title>
+    <meta name="description"
+          content="A clear, beginner-friendly but mathematically grounded guide to Support Vector Machines (SVM): intuition, margins, hyperplanes, hard vs soft margin, hinge loss, dual form, kernel trick, common kernels, scikit-learn code, and when to use SVM in practice." />
+    <meta name="keywords"
+          content="support vector machine, SVM, kernel trick, hinge loss, hard margin, soft margin, RBF kernel, polynomial kernel, SVC scikit-learn, classification, maximum margin classifier, machine learning beginner friendly" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css"/>
+
+    <!-- code highlighting -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VCL644R1SZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-VCL644R1SZ');
+    </script>
+
+    <link rel="icon" type="image/x-icon" href="Kudos_AI_favicon.png">
+
+    <!-- MathJax for equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+      .highlight {
+        color: #007bff;
+        font-weight: bold;
+      }
+      p { margin-bottom: 1em; }
+
+      .video-container {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        max-width: 100%;
+        background: #000;
+        margin: 0 auto;
+        border-radius: 12px;
+      }
+      .video-container iframe {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        border-radius: 12px;
+      }
+
+      pre code {
+        background-color: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+        padding: 10px;
+        display: block;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 15px;
+      }
+
+      .image-container {
+        text-align: center;
+        margin: 20px 0;
+      }
+      .responsive-image {
+        max-width: 100%;
+        height: auto;
+        display: inline-block;
+        border-radius: 8px;
+      }
+
+      .scroll-indicator {
+        position: relative;
+        overflow-x: auto;
+      }
+
+      .math-equation {
+        font-family: "Courier New", monospace;
+        padding: 5px;
+        border-radius: 4px;
+        display: block;
+        max-width: 100%;
+        white-space: nowrap;
+        word-break: normal;
+        background-color: transparent;
+        text-align: center;
+        margin: 10px auto;
+      }
+
+      h3 { text-align: center; }
+      h4 { text-align: left; }
+
+      /* gentle callouts / TOC */
+      .note {
+        background: #eef7ff;
+        border-left: 4px solid #007bff;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 14px 0;
+      }
+      .tip {
+        background: #fff7e6;
+        border-left: 4px solid #ffbf00;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 14px 0;
+      }
+      .warn {
+        background: #ffecec;
+        border-left: 4px solid #ff4d4f;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 14px 0;
+      }
+      .checklist li { margin-bottom: .4em; }
+      .mini { font-size: .95em; color: #444; }
+      .toc a { color: #007bff; text-decoration: none; }
+      .toc a:hover { text-decoration: underline; }
+      .boxed {
+        border: 1px solid #007bff;
+        border-radius: 6px;
+        padding: 8px 12px;
+        background: #eef7ff;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: white;">
+      <a class="navbar-brand" href="/index.html">
+        <img width="180" src="Kudos_AI_logo_transparent.png" alt="Kudos AI Logo">
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNavbarToggler10"
+              aria-controls="myNavbarToggler10" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="myNavbarToggler10">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item"><a class="nav-link" href="/index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Projects.html">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="/About-me.html">About me</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Blog.html">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="/Get-in-Touch.html">Get in Touch</a></li>
+        </ul>
+        <ul class="navbar-nav sm-icons mr-0 d-flex justify-content-center">
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://www.linkedin.com/in/hamoutni/"><i class="fa-brands fa-linkedin-in" style="margin-top: 7px;"></i></a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://www.kaggle.com/anashamoutni"><i class="fab fa-kaggle"></i></a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://github.com/AnasHamoutni"><i class="fab fa-github" style="margin-top: 7px;"></i></a></li>
+          <li class="nav-item"><a class="nav-link" target="_blank" href="https://x.com/anashamoutni"><i class="fab fa-x-twitter" style="margin-top: 7px;"></i></a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- HERO + TITLE -->
+    <div class="blogPost-div">
+      <img class="imgPost" loading="lazy"
+           src="Support-Vector-Regression.png"
+           alt="Support Vector Machines: Understanding the Math Behind SVM" />
+      <div class="blogPost-title-div">
+        <h2 class="blogPost-title">Support Vector Machines: Understanding the Math Behind SVM</h2>
+      </div>
+
+      <!-- ARTICLE BODY -->
+      <div class="postBody-div">
+
+        <!-- ABSTRACT -->
+        <p>
+          <em>
+            Support Vector Machines (<span class="highlight"><a href="https://en.wikipedia.org/wiki/Support_vector_machine" target="_blank">SVMs</a></span>) are one of those algorithms every data scientist hears about early on… but the math can feel intimidating. The good news: once you understand “maximize the margin” and the idea of the <span class="highlight">kernel trick</span>, most of SVMs fall into place.  
+            This article walks slowly through the geometry, the optimization problem, hard vs soft margin, hinge loss, dual formulation, kernels (linear, polynomial, RBF), plus hands-on <span class="highlight">scikit-learn</span> code and practical tips for when SVMs shine (and when they don’t).
+          </em>
+        </p>
+
+        <!-- TOC -->
+        <div class="note toc">
+          <strong>Contents</strong> — 
+          <a href="#intuition">Intuition</a> ·
+          <a href="#hard-margin">Hard-margin SVM</a> ·
+          <a href="#soft-margin">Soft margin &amp; hinge loss</a> ·
+          <a href="#dual">Dual form &amp; support vectors</a> ·
+          <a href="#kernels">Kernel trick</a> ·
+          <a href="#example">Toy 2D example</a> ·
+          <a href="#code">Python code (scikit-learn)</a> ·
+          <a href="#hyperparams">C &amp; gamma intuition</a> ·
+          <a href="#variants">Variants: multi-class, SVR, one-class</a> ·
+          <a href="#practice">When to use SVM</a> ·
+          <a href="#video">Video</a> ·
+          <a href="#refs">References</a>
+        </div>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="intuition" style="color:blue;margin-top:35px;margin-bottom:30px;">1. Intuition: A Straight Line That Plays It Safe</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <p>
+          Suppose you have two classes of points in 2D (say, red and blue). There are many possible straight lines that separate them. Which one is “best”?
+        </p>
+
+        <p>
+          The SVM answer: choose the line that leaves the <strong>largest possible gap</strong> (margin) between the two classes. Intuitively, if you later see slightly noisy or shifted data, that line is more robust — it’s not hugging any particular point too tightly.
+        </p>
+
+        <div class="image-container">
+          <img src="SVM-linear-margin-diagram.png"
+               alt="Linear SVM with maximum margin and support vectors"
+               class="responsive-image">
+          <p class="mini" style="margin-top:6px;">A linear SVM finds the separating line that maximizes the margin between the closest points (support vectors).</p>
+        </div>
+
+        <p>
+          In higher dimensions, that line becomes a <span class="highlight">hyperplane</span>. The points that lie closest to this hyperplane are the <strong>support vectors</strong>. They “support” the solution: if you removed other points far away, the boundary wouldn’t move; if you removed a support vector, it might.
+        </p>
+
+        <div class="tip mini">
+          Think of SVMs as trying to draw the “fattest possible street” that separates two neighborhoods, where the buildings closest to the street are the support vectors.
+        </div>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="hard-margin" style="color:blue;margin-top:35px;margin-bottom:30px;">2. Hard-Margin SVM: Perfect Separation with Maximum Margin</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <p>
+          Let’s start with the ideal case: the data is perfectly linearly separable — we can draw a straight hyperplane that gets all labels right.
+        </p>
+
+        <p>
+          A linear classifier has the form:
+        </p>
+        <div class="scroll-indicator">
+          <div class="math-equation">
+            $$ f(\mathbf{x}) = \mathbf{w}^\top \mathbf{x} + b $$
+          </div>
+        </div>
+
+        <p>
+          The prediction is:
+        </p>
+        <div class="scroll-indicator">
+          <div class="math-equation">
+            $$ \hat{y} = \text{sign}(f(\mathbf{x})) $$
+          </div>
+        </div>
+
+        <p>
+          For correctly classified points with labels \( y_i \in \{+1, -1\} \):
+        </p>
+        <div class="scroll-indicator">
+          <div class="math-equation">
+            $$ y_i\,(\mathbf{w}^\top \mathbf{x}_i + b) &gt; 0. $$
+          </div>
+        </div>
+
+        <h4 style="color:blue;margin-top:25px;margin-bottom:20px;">2.1 Margin definition</h4>
+
+        <p>
+          The (geometric) distance from a point \( \mathbf{x}_i \) to the hyperplane \( \mathbf{w}^\top \mathbf{x} + b = 0 \) is:
+        </p>
+        <div class="scroll-indicator">
+          <div class="math-equation">
+            $$ \text{dist}(\mathbf{x}_i, \mathcal{H}) =
+            \frac{|\,\mathbf{w}^\top \mathbf{x}_i + b\,|}{\|\mathbf{w}\|}. $$
+          </div>
+        </div>
+
+        <p>
+          For the nearest points (support vectors) we enforce:
+        </p>
+        <div class="scroll-indicator">
+          <div class="math-equation">
+            $$ y_i\,(\mathbf{w}^\top \mathbf{x}_i + b) = 1. $$
+          </div>
+        </div>
+
+        <p>
+          Under this scaling convention, the margin becomes:
+        </p>
+        <div class="scroll-indicator">
+          <div class="math-equation">
+            $$ \text{margin} = \frac{2}{\|\mathbf{w}\|}. $$
+          </div>
+        </div>
+
+        <p>
+          So, <strong>maximizing the margin</strong> is equivalent to <strong>minimizing \( \|\mathbf{w}\| \)</strong>.
+        </p>
+
+        <h4 style="color:blue;margin-top:25px;margin-bottom:20px;">2.2 Hard-margin optimization problem</h4>
+
+        <p>
+          Putting it all together, the hard-margin SVM solves:
+        </p>
+
+        <div class="scroll-indicator">
+          <div class="math-equation">
+            $$
+            \begin{aligned}
+            \min_{\mathbf{w}, b} \quad & \frac{1}{2}\|\mathbf{w}\|^2 \\
+            \text{s.t.} \quad & y_i\,(\mathbf{w}^\top \mathbf{x}_i + b) \ge 1 \quad \forall i.
+            \end{aligned}
+            $$
+          </div>
+        </div>
+
+        <p>
+          This is a <span class="highlight"><a href="https://en.wikipedia.org/wiki/Quadratic_programming" target="_blank">quadratic programming</a></span> problem: a quadratic objective with linear constraints.
+        </p>
+
+        <div class="note mini">
+          Hard margin assumes the data <em>is</em> perfectly separable. Real datasets have noise → we relax this later with the soft-margin SVM.
+        </div>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="soft-margin" style="color:blue;margin-top:35px;margin-bottom:30px;">3. Soft Margin &amp; Hinge Loss: Being Okay with a Few Mistakes</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <p>
+          In practice, data is messy. Outliers exist. If you insist on perfect separation, you might end up with a crazy, almost vertical hyperplane that overfits.
+        </p>
+
+        <p>
+          Soft-margin SVM introduces <strong>slack variables</strong> \( \xi_i \ge 0 \) that allow some violations:
+        </p>
+
+        <div class="scroll-indicator">
+          <div class="math-equation">
+            $$ y_i\,(\mathbf{w}^\top \mathbf{x}_i + b) \ge 1 - \xi_i. $$
+          </div>
+        </div>
+
+        <p>
+          The new optimization problem becomes:
+        </p>
+
+        <div class="scroll-indicator">
+          <div class="math-equation">
+            $$
+            \begin{aligned}
+            \min_{\mathbf{w}, b, \boldsymbol{\xi}} \quad & \frac{1}{2}\|\mathbf{w}\|^2 + C \sum_{i=1}^n \xi_i \\
+            \text{s.t.} \quad & y_i\,(\mathbf{w}^\top \mathbf{x}_i + b) \ge 1 - \xi_i,\quad \xi_i \ge 0.
+            \end{aligned}
+            $$
+          </div>
+        </div>
+
+        <ul class="checklist">
+          <li>\( \frac{1}{2}\|\mathbf{w}\|^2 \): keep the margin large (simpler boundary).</li>
+          <li>\( C \sum \xi_i \): penalize margin violations (misclassifications / points inside the margin).</li>
+        </ul>
+
+        <div class="tip mini">
+          <strong>Hyperparameter \( C \)</strong>:  
+          – Large \( C \) = punish errors strongly (low bias, higher variance).  
+          – Small \( C \) = allow more errors, smoother decision boundary (higher bias, lower variance).
+        </div>
+
+        <h4 style="color:blue;margin-top:25px;margin-bottom:20px;">3.1 Hinge loss view</h4>
+
+        <p>
+          Soft-margin SVMs can also be written using the <span class="highlight"><a href="https://en.wikipedia.org/wiki/Hinge_loss" target="_blank">hinge loss</a></span>:
+        </p>
+
+        <div class="scroll-indicator">
+          <div class="math-equation">
+            $$ \ell_{\text{hinge}}(y, f(\mathbf{x})) = \max(0, 1 - y\,f(\mathbf{x})). $$
+          </div>
+        </div>
+
+        <p>
+          The regularized risk minimization form becomes:
+        </p>
+
+        <div class="scroll-indicator">
+          <div class="math-equation">
+            $$ 
+            \min_{\mathbf{w}, b}
+            \quad \frac{1}{2}\|\mathbf{w}\|^2
+            + C \sum_{i=1}^n \max(0, 1 - y_i(\mathbf{w}^\top \mathbf{x}_i + b)).
+            $$
+          </div>
+        </div>
+
+        <p>
+          Compare with logistic regression (log loss). Both are linear classifiers with different loss functions and regularization styles.
+        </p>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="dual" style="color:blue;margin-top:35px;margin-bottom:30px;">4. Dual Form &amp; Why Only Support Vectors Matter</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <p>
+          The SVM can also be expressed in a <strong>dual form</strong> using <span class="highlight"><a href="https://en.wikipedia.org/wiki/Lagrange_multiplier" target="_blank">Lagrange multipliers</a></span>. This is where the kernel trick will show up nicely.
+        </p>
+
+        <h4 style="color:blue;margin-top:25px;margin-bottom:20px;">4.1 Lagrangian setup (high level)</h4>
+
+        <p>
+          We introduce multipliers \( \alpha_i \ge 0 \) for each constraint \( y_i(\mathbf{w}^\top \mathbf{x}_i + b) \ge 1 - \xi_i \), and others for \( \xi_i \ge 0 \). After some algebra (skipping the full derivation here), the dual problem for the soft-margin SVM becomes:
+        </p>
+
+        <div class="scroll-indicator">
+          <div class="math-equation">
+            $$
+            \begin{aligned}
+            \max_{\boldsymbol{\alpha}} \quad &
+              \sum_{i=1}^n \alpha_i
+              - \frac{1}{2} \sum_{i=1}^n \sum_{j=1}^n
+                \alpha_i \alpha_j y_i y_j\, \mathbf{x}_i^\top \mathbf{x}_j \\
+            \text{s.t.} \quad &
+              0 \le \alpha_i \le C,\; \sum_{i=1}^n \alpha_i y_i = 0.
+            \end{aligned}
+            $$
+          </div>
+        </div>
+
+        <p>
+          The optimal weights can be recovered from the multipliers:
+        </p>
+
+        <div class="scroll-indicator">
+          <div class="math-equation">
+            $$ \mathbf{w}^\star = \sum_{i=1}^n \alpha_i^\star y_i \mathbf{x}_i. $$
+          </div>
+        </div>
+
+        <p>
+          Notice that only points with \( \alpha_i^\star &gt; 0 \) matter in this sum. These are the <strong>support vectors</strong>. Everyone else has \( \alpha_i = 0 \) and doesn’t influence the final classifier.
+        </p>
+
+        <div class="boxed mini">
+          <strong>Key idea:</strong> SVMs are “sparse in the support vectors” — only a subset of training examples defines the decision boundary.
+        </div>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="kernels" style="color:blue;margin-top:35px;margin-bottom:30px;">5. The Kernel Trick: Nonlinear Boundaries Without Mapping Explicitly</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <p>
+          What if the classes are not linearly separable in the original feature space? The classic SVM move: map the inputs into a higher-dimensional feature space where a linear separator <em>does</em> exist.
+        </p>
+
+        <p>
+          But computing that mapping explicitly can be expensive or even infinite-dimensional. The <span class="highlight"><a href="https://en.wikipedia.org/wiki/Kernel_method" target="_blank">kernel trick</a></span> says:
+        </p>
+
+        <ul class="checklist">
+          <li>We never need \( \phi(\mathbf{x}) \) explicitly.</li>
+          <li>We only need inner products \( \phi(\mathbf{x}_i)^\top \phi(\mathbf{x}_j) \).</li>
+          <li>Define a function \( K(\mathbf{x}_i, \mathbf{x}_j) \) that <em>acts like</em> that inner product.</li>
+        </ul>
+
+        <p>
+          In the dual objective, inner products appear as \( \mathbf{x}_i^\top \mathbf{x}_j \). We replace them by a kernel:
+        </p>
+
+        <div class="scroll-indicator">
+          <div class="math-equation">
+            $$ \mathbf{x}_i^\top \mathbf{x}_j \;\;\longrightarrow\;\;
+               K(\mathbf{x}_i, \mathbf{x}_j). $$
+          </div>
+        </div>
+
+        <h4 style="color:blue;margin-top:25px;margin-bottom:20px;">5.1 Common kernels</h4>
+
+        <ul>
+          <li>
+            <strong>Linear kernel</strong>  
+            \( K(\mathbf{x}, \mathbf{z}) = \mathbf{x}^\top \mathbf{z} \)  
+            Good baseline; equivalent to a linear SVM in the original space.
+          </li>
+          <li>
+            <strong>Polynomial kernel</strong>  
+            \( K(\mathbf{x}, \mathbf{z}) = (\gamma\,\mathbf{x}^\top \mathbf{z} + r)^d \)  
+            Useful when interactions between features matter but you don’t want to manually create polynomial features.
+          </li>
+          <li>
+            <strong>RBF / Gaussian kernel</strong>  
+            \( K(\mathbf{x}, \mathbf{z}) = \exp(-\gamma \|\mathbf{x} - \mathbf{z}\|^2) \)  
+            Very popular. Allows very flexible, nonlinear boundaries. Hyperparameter \( \gamma \) controls how “local” the influence of a point is.
+          </li>
+        </ul>
+
+        <div class="image-container">
+          <img src="SVM-kernel-nonlinear-boundary.png"
+               alt="Nonlinear decision boundary achieved via RBF kernel"
+               class="responsive-image">
+          <p class="mini" style="margin-top:6px;">With an RBF kernel, the decision boundary can wrap around clusters in complex ways, even though the SVM is still linear in the implicit feature space.</p>
+        </div>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="example" style="color:blue;margin-top:35px;margin-bottom:30px;">6. Tiny 2D Example: Max Margin by Hand (Very Roughly)</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <p>
+          Consider a toy dataset in 2D:
+        </p>
+
+        <ul>
+          <li>Class +1: \( (2, 2), (2, 3) \)</li>
+          <li>Class −1: \( (0, 0), (1, 0) \)</li>
+        </ul>
+
+        <p>
+          Plotting this, you can see a roughly diagonal separation. We won’t solve the full QP here, but conceptually:
+        </p>
+        <ul class="checklist">
+          <li>Try a candidate line, e.g., \( x_2 = x_1 + 0.5 \Rightarrow \mathbf{w} = (-1, 1), b = 0.5 \).</li>
+          <li>Check constraints \( y_i(\mathbf{w}^\top \mathbf{x}_i + b) \ge 1 \); rescale \( \mathbf{w}, b \) to meet the margin conditions.</li>
+          <li>The support vectors will be the closest points to the boundary on each side.</li>
+        </ul>
+
+        <p>
+          SVM solvers do this systematically using convex optimization. The example is just to emphasize: the algorithm is really just geometry + optimization.
+        </p>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="code" style="color:blue;margin-top:35px;margin-bottom:30px;">7. Hands-On: SVM in Python with scikit-learn</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <p>
+          Let’s train an SVM on a simple nonlinear dataset using the RBF kernel.
+        </p>
+
+        <pre><code class="language-python">
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_moons
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+# 1) Data: two interleaving half circles
+X, y = make_moons(noise=0.2, random_state=42)
+
+# 2) Train/test split
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=42, stratify=y
+)
+
+# 3) SVM with RBF kernel
+clf = SVC(kernel="rbf", C=1.0, gamma=0.5)  # try different C, gamma
+clf.fit(X_train, y_train)
+
+# 4) Evaluation
+y_pred = clf.predict(X_test)
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("Confusion matrix:\n", confusion_matrix(y_test, y_pred))
+
+# 5) Plot decision boundary
+def plot_decision_boundary(model, X, y):
+    x_min, x_max = X[:,0].min() - 0.5, X[:,0].max() + 0.5
+    y_min, y_max = X[:,1].min() - 0.5, X[:,1].max() + 0.5
+    xx, yy = np.meshgrid(
+        np.linspace(x_min, x_max, 300),
+        np.linspace(y_min, y_max, 300)
+    )
+    grid = np.c_[xx.ravel(), yy.ravel()]
+    zz = model.predict(grid).reshape(xx.shape)
+
+    plt.contourf(xx, yy, zz, alpha=0.3, cmap="coolwarm")
+    plt.scatter(X[:,0], X[:,1], c=y, cmap="coolwarm", edgecolors="k")
+    plt.title("SVM with RBF kernel")
+    plt.show()
+
+plot_decision_boundary(clf, X, y)
+        </code></pre>
+
+        <p>
+          The decision boundary will curve to separate the two moon-shaped clusters. Play with:
+        </p>
+        <ul class="checklist">
+          <li><code>C</code>: higher → more complex boundary, more risk of overfitting.</li>
+          <li><code>gamma</code>: higher → each point’s influence is more local, leading to wigglier boundaries.</li>
+        </ul>
+
+        <div class="tip mini">
+          A common starting point: <code>kernel="rbf"</code>, <code>C=1.0</code>, <code>gamma="scale"</code> (the scikit-learn default).
+        </div>
+
+        <h4 style="color:blue;margin-top:25px;margin-bottom:20px;">7.1 Multi-class SVM in scikit-learn</h4>
+
+        <p>
+          SVMs are inherently binary classifiers, but they can be extended to multi-class via:
+        </p>
+        <ul>
+          <li><strong>One-versus-rest (OvR)</strong>: train one classifier per class vs all others.</li>
+          <li><strong>One-versus-one (OvO)</strong>: train one classifier for each pair of classes.</li>
+        </ul>
+
+        <p>
+          scikit-learn’s <code>SVC</code> handles this automatically:
+        </p>
+
+        <pre><code class="language-python">
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+
+# 3-class iris dataset
+iris = datasets.load_iris()
+X_iris, y_iris = iris.data, iris.target
+
+svm_clf = make_pipeline(
+    StandardScaler(),
+    SVC(kernel="rbf", C=1.0, gamma="scale", decision_function_shape="ovr")
+)
+svm_clf.fit(X_iris, y_iris)
+print("Iris training accuracy:", svm_clf.score(X_iris, y_iris))
+        </code></pre>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="hyperparams" style="color:blue;margin-top:35px;margin-bottom:30px;">8. Hyperparameters: C and Gamma Without the Magic</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <p>
+          The two most important knobs for an RBF SVM are \( C \) and \( \gamma \).
+        </p>
+
+        <h4 style="color:blue;margin-top:20px;margin-bottom:10px;">8.1 Regularization parameter \( C \)</h4>
+
+        <ul class="checklist">
+          <li><strong>High \( C \)</strong>:  
+            – Strongly penalizes misclassifications  
+            – Tries to classify every training point correctly  
+            – Risk of overfitting, especially with noisy labels.
+          </li>
+          <li><strong>Low \( C \)</strong>:  
+            – Allows more violations of the margin  
+            – Smoother, more regularized boundary  
+            – Better generalization when data is noisy.
+          </li>
+        </ul>
+
+        <h4 style="color:blue;margin-top:20px;margin-bottom:10px;">8.2 Kernel width \( \gamma \) (for RBF)</h4>
+
+        <p>
+          In the RBF kernel:
+        </p>
+        <div class="scroll-indicator">
+          <div class="math-equation">
+            $$ K(\mathbf{x}, \mathbf{z}) = \exp(-\gamma \|\mathbf{x} - \mathbf{z}\|^2), $$
+          </div>
+        </div>
+
+        <ul class="checklist">
+          <li><strong>Small \( \gamma \)</strong>: kernel varies slowly → each point influences a large region → smoother boundary.</li>
+          <li><strong>Large \( \gamma \)</strong>: kernel is very peaked → each point influences only a small region → highly flexible, may overfit.</li>
+        </ul>
+
+        <p>
+          In practice, we tune \( C \) and \( \gamma \) with cross-validation, usually with a grid search in log-space (e.g., \( C \in \{0.1, 1, 10, 100\} \), \( \gamma \in \{0.01, 0.1, 1, 10\} \)).
+        </p>
+
+        <pre><code class="language-python">
+from sklearn.model_selection import GridSearchCV
+
+param_grid = {
+    "svc__C": [0.1, 1, 10, 100],
+    "svc__gamma": [0.01, 0.1, 1, 10]
+}
+
+pipe = make_pipeline(
+    StandardScaler(),
+    SVC(kernel="rbf")
+)
+
+grid = GridSearchCV(pipe, param_grid, cv=5, n_jobs=-1)
+grid.fit(X_train, y_train)
+
+print("Best params:", grid.best_params_)
+print("Best CV score:", grid.best_score_)
+        </code></pre>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="variants" style="color:blue;margin-top:35px;margin-bottom:30px;">9. Variants: SVR, One-Class SVM &amp; Multi-class Strategies</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <h4 style="color:blue;margin-top:20px;margin-bottom:10px;">9.1 Support Vector Regression (SVR)</h4>
+
+        <p>
+          SVMs aren’t just for classification. <span class="highlight"><a href="https://en.wikipedia.org/wiki/Support_vector_machine#Regression" target="_blank">Support Vector Regression</a></span> (SVR) adapts the idea to regression:
+        </p>
+
+        <ul class="checklist">
+          <li>Instead of a margin between classes, we use an <strong>\(\varepsilon\)-insensitive tube</strong> around the regression function.</li>
+          <li>Points inside the tube incur zero loss; only points outside contribute.</li>
+        </ul>
+
+        <p>
+          The loss is:
+        </p>
+        <div class="scroll-indicator">
+          <div class="math-equation">
+            $$ 
+            \ell_\varepsilon(y, f(\mathbf{x})) =
+            \max(0, |y - f(\mathbf{x})| - \varepsilon).
+            $$
+          </div>
+        </div>
+
+        <pre><code class="language-python">
+from sklearn.svm import SVR
+
+svr = SVR(kernel="rbf", C=1.0, epsilon=0.1, gamma="scale")
+svr.fit(X_train_reg, y_train_reg)
+y_pred_reg = svr.predict(X_test_reg)
+        </code></pre>
+
+        <h4 style="color:blue;margin-top:20px;margin-bottom:10px;">9.2 One-Class SVM (Anomaly Detection)</h4>
+
+        <p>
+          One-class SVM tries to learn the “region” where the data lives, treating anything outside as an anomaly. scikit-learn provides <code>OneClassSVM</code> for this:
+        </p>
+
+        <pre><code class="language-python">
+from sklearn.svm import OneClassSVM
+
+ocs = OneClassSVM(kernel="rbf", nu=0.05, gamma="scale")
+ocs.fit(X_train_normal)
+anomaly_scores = ocs.predict(X_test)  # -1 = outlier, +1 = inlier
+        </code></pre>
+
+        <p>
+          This is useful for fraud detection, monitoring systems, or any setting where “normal” is well-defined and anomalies are rare.
+        </p>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="practice" style="color:blue;margin-top:35px;margin-bottom:30px;">10. When to Use SVM (and When Not To)</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <h4 style="color:blue;margin-top:20px;margin-bottom:10px;">10.1 Strengths</h4>
+
+        <ul class="checklist">
+          <li><strong>Strong performance on small to medium-sized tabular datasets</strong>, especially with good feature engineering.</li>
+          <li><strong>Robust to high-dimensional spaces</strong> (e.g., text classification with bag-of-words or TF-IDF features).</li>
+          <li><strong>Well-defined optimization problem</strong> — convex, global optimum.</li>
+          <li><strong>Interpretable geometry</strong>: margin, support vectors, influence of C and kernels.</li>
+        </ul>
+
+        <h4 style="color:blue;margin-top:20px;margin-bottom:10px;">10.2 Weaknesses</h4>
+
+        <ul class="checklist">
+          <li>Training time can be high for very large datasets (hundreds of thousands or millions of points).</li>
+          <li>Memory usage scales with the number of support vectors.</li>
+          <li>Hyperparameter tuning (C, kernel, gamma) can be sensitive and expensive.</li>
+          <li>Less popular for raw images/audio now that deep nets dominate there.</li>
+        </ul>
+
+        <div class="warn mini">
+          If you have millions of examples and deep learning infrastructure available, a neural network may be more scalable. If you have a few thousand samples with meaningful features, an SVM is still a very strong baseline.
+        </div>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="video" style="color:blue;margin-top:35px;margin-bottom:30px;">11. Recommended Video: StatQuest on SVM</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <p>
+          If you prefer animations and step-by-step visuals, this StatQuest video is an excellent complement to this article:
+        </p>
+
+        <div class="video-container" style="width:95%;margin:0 auto;">
+          <iframe src="https://www.youtube.com/embed/efR1C6CvhmE"
+                  title="StatQuest: Support Vector Machines (SVM) clearly explained"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
+        </div>
+        <br/>
+
+        <center><hr width="50%" class="solid"></center>
+        <h3 id="refs" style="color:blue;margin-top:35px;margin-bottom:30px;">12. References &amp; Further Reading</h3>
+        <center><hr width="50%" class="solid"></center>
+
+        <ol>
+          <li>Vapnik, V. N. (1998). <em>Statistical Learning Theory</em>. Wiley.</li>
+          <li>Cortes, C., &amp; Vapnik, V. (1995). <em>Support-Vector Networks</em>. Machine Learning, 20(3).</li>
+          <li>Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <em>The Elements of Statistical Learning</em>. Ch. 12, “Support Vector Machines”.</li>
+          <li>scikit-learn documentation: <a href="https://scikit-learn.org/stable/modules/svm.html" target="_blank">Support Vector Machines</a>.</li>
+          <li>Wikipedia: <a href="https://en.wikipedia.org/wiki/Support_vector_machine" target="_blank">Support Vector Machine</a>, <a href="https://en.wikipedia.org/wiki/Kernel_method" target="_blank">Kernel method</a>, <a href="https://en.wikipedia.org/wiki/Hinge_loss" target="_blank">Hinge loss</a>.</li>
+        </ol>
+
+      </div> <!-- /postBody-div -->
+    </div> <!-- /blogPost-div -->
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="waves">
+        <div class="wave" id="wave1"></div>
+        <div class="wave" id="wave2"></div>
+        <div class="wave" id="wave3"></div>
+      </div>
+      <div class="footer-elem-container">
+        <ul class="social-icon">
+          <li class="social-icon__item">
+            <a class="social-icon__link" href="https://www.linkedin.com/in/hamoutni/" target="_blank">
+              <ion-icon name="logo-linkedIn"></ion-icon>
+            </a>
+          </li>
+          <li class="social-icon__item">
+            <a class="social-icon__link" href="https://www.kaggle.com/AnasHamoutni" target="_blank">
+              <i class="fab fa-kaggle foote"></i>
+            </a>
+          </li>
+          <li class="social-icon__item">
+            <a class="social-icon__link" href="https://github.com/AnasHamoutni" target="_blank">
+              <ion-icon name="logo-github"></ion-icon>
+            </a>
+          </li>
+          <li class="social-icon__item">
+            <a class="social-icon__link" href="https://x.com/AnasHamoutni" target="_blank">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 462.799"
+                   width="32" height="32" style="vertical-align: baseline;">
+                <path fill="#fff" fill-rule="nonzero"
+                      d="M403.229 0h78.506L310.219 196.04 512 462.799H354.002L230.261 301.007 88.669 462.799h-78.56l183.455-209.683L0 0h161.999l111.856 147.88L403.229 0zm-27.556 415.805h43.505L138.363 44.527h-46.68l283.99 371.278z"/>
+              </svg>
+            </a>
+          </li>
+        </ul>
+
+        <ul class="menu">
+          <li class="menu__item"><a class="menu__link" href="/index.html">Home</a></li>
+          <li class="menu__item"><a class="menu__link" href="/Projects.html">Projects</a></li>
+          <li class="menu__item"><a class="menu__link" href="/About-me.html">About me</a></li>
+          <li class="menu__item"><a class="menu__link" href="/Blog.html">Blog</a></li>
+          <li class="menu__item"><a class="menu__link" href="/Get-in-Touch.html">Get in Touch</a></li>
+          <li class="menu__item"><a class="menu__link" href="/Privacy-Policy.html">Privacy Policy</a></li>
+          <li class="menu__item"><a class="menu__link" href="/Terms-of-Service.html">Terms of Service</a></li>
+          <li class="menu__item"><a class="menu__link" href="/Cookie-Policy.html">Cookie Policy</a></li>
+        </ul>
+
+        <div class="p-foot-div">
+          <p>&copy;2025 Kudos AI • by Anas HAMOUTNI • All Rights Reserved</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" defer crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js" defer></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script src="https://kit.fontawesome.com/d25a67fa19.js" crossorigin="anonymous" defer></script>
+    <script src="/index.js" defer></script>
+  </body>
+</html>
