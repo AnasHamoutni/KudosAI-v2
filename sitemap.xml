@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+
+
+<url>
+  <loc>https://www.kudosai.com/</loc>
+  <lastmod>2025-08-15T16:52:41+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/index.html</loc>
+  <lastmod>2025-08-15T16:52:41+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Projects.html</loc>
+  <lastmod>2025-08-15T16:51:36+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/About-me.html</loc>
+  <lastmod>2025-08-15T16:49:29+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Blog.html</loc>
+  <lastmod>2025-08-16T14:19:45+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Get-in-Touch.html</loc>
+  <lastmod>2025-08-15T16:50:35+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Privacy-Policy.html</loc>
+  <lastmod>2025-08-15T16:48:14+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Terms-of-Service.html</loc>
+  <lastmod>2025-08-15T16:51:55+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Cookie-Policy.html</loc>
+  <lastmod>2025-08-15T16:46:24+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Projects/Computer-Vision.html</loc>
+  <lastmod>2025-08-15T17:27:03+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Projects/Natural-Language-Processing.html</loc>
+  <lastmod>2025-08-15T17:28:05+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Projects/Time-Series-Forecasting.html</loc>
+  <lastmod>2025-08-15T17:28:57+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Projects/Reinforcement-Learning.html</loc>
+  <lastmod>2025-08-15T17:28:26+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Blog/How-Self-Attention-Works-Visually-Explained.html</loc>
+  <lastmod>2025-08-16T14:03:11+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Blog/Inside-the-Confusion-Matrix-Metrics-Every-Data-Scientist-Should-Know.html</loc>
+  <lastmod>2025-08-17T19:28:08+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Blog/L2-Regularization-Ridge-Weight-Decay-A-Detailed-Gentle-Guide.html</loc>
+  <lastmod>2025-08-15T18:26:37+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Blog/The-Complete-Beginner-Guide-to-Gradient-Descent.html</loc>
+  <lastmod>2025-08-15T18:11:01+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Blog/DeepSeek-R1-A-New-Era-of-Reasoning-Centric-Large-Language-Models.html</loc>
+  <lastmod>2025-08-15T16:58:44+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Blog/The-Transformer-Architecture-Revolutionizing-Natural-Language-Processing.html</loc>
+  <lastmod>2025-08-15T17:25:28+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Blog/The-Evolution-of-Language-Models-From-N-grams-to-Transformers.html</loc>
+  <lastmod>2025-08-15T13:54:07+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Blog/Introduction-to-Language-Models-What-Are-They-and-Why-They-Matter.html</loc>
+  <lastmod>2025-08-15T16:59:46+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Blog/Mistral-AI-Pioneering-the-AI-Landscape-in-Europe.html</loc>
+  <lastmod>2025-08-17T18:56:18+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Blog/AI-Generated-Art-The-Promise-and-Peril-of-Stable-Diffusion.html</loc>
+  <lastmod>2025-08-17T11:52:17+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Blog/Midjourney-Reshaping-the-Visual-Landscape-Through-AI-Imagination.html</loc>
+  <lastmod>2025-08-17T16:27:03+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Blog/ChatGPT-The-Star-of-AI-with-New-Surprises.html</loc>
+  <lastmod>2025-08-17T16:38:25+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Blog/DALL-E-Generation-Of-Images-From-Texts.html</loc>
+  <lastmod>2025-08-17T16:52:08+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Blog/Hugging-Face-What-You-Need-To-Know.html</loc>
+  <lastmod>2025-08-17T17:18:44+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Blog/Machine-Translation-State-Of-The-Art.html</loc>
+  <lastmod>2025-08-17T17:30:35+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://www.kudosai.com/Blog/Super-Resolution-With-Deep-Learning-SRGAN.html</loc>
+  <lastmod>2025-08-17T17:46:12+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+
+
+</urlset>

@@ -1,0 +1,6 @@
+{
+  "routes": [
+    { "route": "/:page.html", "redirect": "/:page", "statusCode": 301 },
+    { "route": "/:page", "rewrite": "/:page.html" }
+  ]
+}
