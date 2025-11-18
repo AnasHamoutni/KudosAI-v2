@@ -304,6 +304,14 @@ font-size: 19px;
 margin: auto;
 }
 
+.about-blog-note {
+  font-family: myFirstFont;
+  margin: 15px auto 30px;
+  max-width: 62%;
+  font-size: 1.1rem;
+  color: #1a1a1a;
+}
+
 .aboutMeTitle {
 font-family: myFirstFont;
 
@@ -351,6 +359,14 @@ text-align: justify;
 width: 85%;
 font-size: 17px;
 margin: auto;
+}
+
+.about-blog-note {
+  font-family: myFirstFont;
+  width: 85%;
+  margin: 15px auto 30px;
+  font-size: 1rem;
+  text-align: justify;
 }
 
 .aboutMeTitle {
@@ -522,6 +538,18 @@ border-top: 3px solid blue;
 display: inline-block;
 font-size:165%;
 
+}
+
+.blog-intro {
+  max-width: 900px;
+  margin: 20px auto 30px;
+  font-family: myFirstFont;
+  font-size: 1.1rem;
+  color: #1a1a1a;
+}
+
+.blog-intro p {
+  margin-bottom: 1rem;
 }
 @media (min-width: 960px) {
 .row1{
@@ -749,17 +777,28 @@ font-family:myFirstFont;
 
 .project-section img {
 
-display: block;
-padding:2px;
-border: 0.2px solid grey;
-margin-bottom:35px;
-width:100%;
+ display: block;
+ padding:2px;
+ border: 0.2px solid grey;
+ margin-bottom:35px;
+ width:100%;
 
--webkit-transition: .5s ease;
+ -webkit-transition: .5s ease;
   -moz-transition: .5s ease;
   -o-transition: .5s ease;
   transition: .5s ease;
-filter: brightness(100%);
+ filter: brightness(100%);
+ }
+
+.project-intro {
+  max-width: 900px;
+  margin: 20px auto 0;
+  font-size: 1.1rem;
+  font-family: myFirstFont;
+}
+
+.project-intro p {
+  margin-bottom: 1rem;
 }
 
 
