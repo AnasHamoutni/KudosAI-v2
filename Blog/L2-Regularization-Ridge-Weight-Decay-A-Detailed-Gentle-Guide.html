@@ -457,7 +457,32 @@ for step in range(2000):
     </div> <!-- /blogPost-div -->
 
     <!-- ---------- FOOTER ---------- -->
-    <footer class="footer">
+    
+    <!-- COMMENTS SECTION -->
+    <section class="comments-section">
+      <h3>Comments</h3>
+      
+      <form id="comment-form" class="comment-form">
+        <label for="comment-name">Name *</label>
+        <input type="text" id="comment-name" placeholder="Your name" required>
+        
+        <label for="comment-email">Email *</label>
+        <input type="email" id="comment-email" placeholder="Your email (not displayed)" required>
+        
+        <label for="comment-password">Password *</label>
+        <input type="password" id="comment-password" placeholder="Create a password (for deleting later)" required>
+        <p class="form-note">Remember this password - you will need it to delete your comment.</p>
+        
+        <label for="comment-text">Comment *</label>
+        <textarea id="comment-text" placeholder="Write your comment..." required></textarea>
+        
+        <button type="submit" class="submit-btn">Post Comment</button>
+      </form>
+      
+      <div id="comments-list" class="comments-list"></div>
+    </section>
+
+<footer class="footer">
       <div class="waves">
         <div class="wave" id="wave1"></div>
         <div class="wave" id="wave2"></div>
@@ -497,5 +522,6 @@ for step in range(2000):
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     <script src='https://kit.fontawesome.com/d25a67fa19.js' crossorigin='anonymous' defer></script>
     <script src="/index.js" defer></script>
-  </body>
+      <script src="/comments.js" defer></script>
+</body>
 </html>

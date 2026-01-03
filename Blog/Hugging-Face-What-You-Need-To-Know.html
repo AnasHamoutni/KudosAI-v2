@@ -232,6 +232,31 @@ print(summarizer(text, max_length=30, min_length=10, do_sample=False))
 <p>As the AI revolution continues, Hugging Face isn’t just participating—it’s shaping the future of how humans and machines collaborate.</p>
 
 </div>
+
+    <!-- COMMENTS SECTION -->
+    <section class="comments-section">
+      <h3>Comments</h3>
+      
+      <form id="comment-form" class="comment-form">
+        <label for="comment-name">Name *</label>
+        <input type="text" id="comment-name" placeholder="Your name" required>
+        
+        <label for="comment-email">Email *</label>
+        <input type="email" id="comment-email" placeholder="Your email (not displayed)" required>
+        
+        <label for="comment-password">Password *</label>
+        <input type="password" id="comment-password" placeholder="Create a password (for deleting later)" required>
+        <p class="form-note">Remember this password - you will need it to delete your comment.</p>
+        
+        <label for="comment-text">Comment *</label>
+        <textarea id="comment-text" placeholder="Write your comment..." required></textarea>
+        
+        <button type="submit" class="submit-btn">Post Comment</button>
+      </form>
+      
+      <div id="comments-list" class="comments-list"></div>
+    </section>
+
 <footer class="footer">
     <div class="waves">
       <div class="wave" id="wave1"></div>
@@ -281,5 +306,6 @@ print(summarizer(text, max_length=30, min_length=10, do_sample=False))
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     <script src='https://kit.fontawesome.com/d25a67fa19.js' crossorigin='anonymous'></script>
     <script src="/index.js" defer></script>
+    <script src="/comments.js" defer></script>
 </body>
 </html>

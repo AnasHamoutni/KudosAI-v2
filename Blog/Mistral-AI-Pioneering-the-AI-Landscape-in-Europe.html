@@ -262,6 +262,31 @@ In the years to come, we will undoubtedly hear more and more about <span style="
 </div>
 
 
+
+    <!-- COMMENTS SECTION -->
+    <section class="comments-section">
+      <h3>Comments</h3>
+      
+      <form id="comment-form" class="comment-form">
+        <label for="comment-name">Name *</label>
+        <input type="text" id="comment-name" placeholder="Your name" required>
+        
+        <label for="comment-email">Email *</label>
+        <input type="email" id="comment-email" placeholder="Your email (not displayed)" required>
+        
+        <label for="comment-password">Password *</label>
+        <input type="password" id="comment-password" placeholder="Create a password (for deleting later)" required>
+        <p class="form-note">Remember this password - you will need it to delete your comment.</p>
+        
+        <label for="comment-text">Comment *</label>
+        <textarea id="comment-text" placeholder="Write your comment..." required></textarea>
+        
+        <button type="submit" class="submit-btn">Post Comment</button>
+      </form>
+      
+      <div id="comments-list" class="comments-list"></div>
+    </section>
+
 <footer class="footer">
     <div class="waves">
       <div class="wave" id="wave1"></div>
@@ -314,5 +339,6 @@ In the years to come, we will undoubtedly hear more and more about <span style="
 		<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
+    <script src="/comments.js" defer></script>
 </body>
 </html>
