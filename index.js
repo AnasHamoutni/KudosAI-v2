@@ -25,33 +25,98 @@ function applyAnalyticsPreference(consentValue) {
 applyAnalyticsPreference(getStoredConsent());
 
 $(document).ready(function(){
-     showAll();
-     $('#inputarticle').on('input', function(){
-          let sentence = $(this).val().toLowerCase();
+     // Blog pagination and search
+     const ARTICLES_PER_PAGE = 6;
+     let currentPage = 1;
+     let filteredArticles = [];
 
-          let titles = document.getElementsByClassName("card-title");
-          let divs = $('.myDivs');
-          showAll();
-               for(let i = 0; i < divs.length; i++){
+     function initBlog() {
+          const divs = $('.myDivs');
+          if (divs.length === 0) return;
 
-                    let div = divs[i];
-                    let title = titles[i].innerText.toLowerCase();
+          filteredArticles = divs.toArray();
+          updatePagination();
+     }
 
+     function searchArticles(query) {
+          const divs = $('.myDivs');
+          const sentence = query.toLowerCase().trim();
 
-                    if(title.includes(sentence))
-                        $(div).show();
-                    else
-                        $(div).hide();
-
+          if (sentence === '') {
+               filteredArticles = divs.toArray();
+          } else {
+               filteredArticles = divs.toArray().filter(function(div) {
+                    const title = $(div).find('.card-title').text().toLowerCase();
+                    const content = $(div).find('.card-text').text().toLowerCase();
+                    return title.includes(sentence) || content.includes(sentence);
+               });
           }
-     });
-     function showAll(){
-          let divs = $('.myDivs');
-          for(let i = 0; i < divs.length; i++){
-               let div = divs[i];
+
+          currentPage = 1;
+          updatePagination();
+     }
+
+     function updatePagination() {
+          const divs = $('.myDivs');
+          const totalPages = Math.ceil(filteredArticles.length / ARTICLES_PER_PAGE);
+          const startIndex = (currentPage - 1) * ARTICLES_PER_PAGE;
+          const endIndex = startIndex + ARTICLES_PER_PAGE;
+
+          // Hide all articles first
+          divs.hide();
+
+          // Show only articles for current page
+          filteredArticles.slice(startIndex, endIndex).forEach(function(div) {
                $(div).show();
+          });
+
+          // Update page info
+          const pageInfo = document.getElementById('pageInfo');
+          const prevBtn = document.getElementById('prevPage');
+          const nextBtn = document.getElementById('nextPage');
+
+          if (pageInfo) {
+               if (filteredArticles.length === 0) {
+                    pageInfo.textContent = 'No results found';
+               } else {
+                    pageInfo.textContent = 'Page ' + currentPage + ' of ' + Math.max(1, totalPages);
+               }
+          }
+
+          if (prevBtn) {
+               prevBtn.disabled = currentPage <= 1;
+          }
+
+          if (nextBtn) {
+               nextBtn.disabled = currentPage >= totalPages || totalPages === 0;
           }
      }
+
+     // Search input handler
+     $('#inputarticle').on('input', function(){
+          searchArticles($(this).val());
+     });
+
+     // Pagination button handlers
+     $('#prevPage').on('click', function() {
+          if (currentPage > 1) {
+               currentPage--;
+               updatePagination();
+               window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+     });
+
+     $('#nextPage').on('click', function() {
+          const totalPages = Math.ceil(filteredArticles.length / ARTICLES_PER_PAGE);
+          if (currentPage < totalPages) {
+               currentPage++;
+               updatePagination();
+               window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+     });
+
+     // Initialize blog
+     initBlog();
 });
 
 document.addEventListener('DOMContentLoaded', function () {
