@@ -1,10 +1,11 @@
 // Comment System for Kudos AI Blog
-// Uses localStorage for persistence and EmailJS for notifications
+// Reads comments from /comments/comments.json and allows new submissions
 
 (function() {
     'use strict';
 
-    const COMMENTS_KEY = 'kudosai_comments';
+    const COMMENTS_FILE = '/comments/comments.json';
+    const LOCAL_COMMENTS_KEY = 'kudosai_pending_comments';
 
     // Simple hash function for password verification
     function hashPassword(password) {
@@ -19,55 +20,67 @@
 
     // Get article ID from URL
     function getArticleId() {
-        return window.location.pathname.replace(/[^a-zA-Z0-9]/g, '_');
+        return window.location.pathname;
     }
 
-    // Get all comments from localStorage
-    function getAllComments() {
+    // Get local pending comments (not yet approved)
+    function getLocalComments() {
         try {
-            return JSON.parse(localStorage.getItem(COMMENTS_KEY)) || {};
+            const all = JSON.parse(localStorage.getItem(LOCAL_COMMENTS_KEY)) || {};
+            return all[getArticleId()] || [];
         } catch (e) {
-            return {};
+            return [];
         }
     }
 
-    // Get comments for current article
-    function getArticleComments() {
-        const allComments = getAllComments();
-        return allComments[getArticleId()] || [];
-    }
-
-    // Save comment
-    function saveComment(comment) {
-        const allComments = getAllComments();
-        const articleId = getArticleId();
-
-        if (!allComments[articleId]) {
-            allComments[articleId] = [];
+    // Save local comment
+    function saveLocalComment(comment) {
+        try {
+            const all = JSON.parse(localStorage.getItem(LOCAL_COMMENTS_KEY)) || {};
+            const articleId = getArticleId();
+            if (!all[articleId]) all[articleId] = [];
+            all[articleId].push(comment);
+            localStorage.setItem(LOCAL_COMMENTS_KEY, JSON.stringify(all));
+        } catch (e) {
+            console.error('Failed to save comment locally:', e);
         }
-
-        allComments[articleId].push(comment);
-        localStorage.setItem(COMMENTS_KEY, JSON.stringify(allComments));
     }
 
-    // Delete comment
-    function deleteComment(commentId, password) {
-        const allComments = getAllComments();
-        const articleId = getArticleId();
-        const comments = allComments[articleId] || [];
+    // Delete local comment
+    function deleteLocalComment(commentId, password) {
+        try {
+            const all = JSON.parse(localStorage.getItem(LOCAL_COMMENTS_KEY)) || {};
+            const articleId = getArticleId();
+            const comments = all[articleId] || [];
 
-        const commentIndex = comments.findIndex(c => c.id === commentId);
-        if (commentIndex === -1) return false;
+            const idx = comments.findIndex(c => c.id === commentId);
+            if (idx === -1) return false;
 
-        const comment = comments[commentIndex];
-        if (hashPassword(password) !== comment.passwordHash) {
+            if (hashPassword(password) !== comments[idx].passwordHash) {
+                return false;
+            }
+
+            comments.splice(idx, 1);
+            all[articleId] = comments;
+            localStorage.setItem(LOCAL_COMMENTS_KEY, JSON.stringify(all));
+            return true;
+        } catch (e) {
             return false;
         }
+    }
 
-        comments.splice(commentIndex, 1);
-        allComments[articleId] = comments;
-        localStorage.setItem(COMMENTS_KEY, JSON.stringify(allComments));
-        return true;
+    // Fetch approved comments from JSON file
+    async function fetchApprovedComments() {
+        try {
+            const response = await fetch(COMMENTS_FILE + '?t=' + Date.now());
+            if (!response.ok) return [];
+            const data = await response.json();
+            const articleId = getArticleId();
+            return data.comments[articleId] || [];
+        } catch (e) {
+            console.log('Could not load comments file:', e);
+            return [];
+        }
     }
 
     // Format date
@@ -85,25 +98,36 @@
     }
 
     // Render comments
-    function renderComments() {
+    async function renderComments() {
         const container = document.getElementById('comments-list');
         if (!container) return;
 
-        const comments = getArticleComments();
+        container.innerHTML = '<p class="loading-comments">Loading comments...</p>';
 
-        if (comments.length === 0) {
+        // Get both approved (from file) and local pending comments
+        const approvedComments = await fetchApprovedComments();
+        const localComments = getLocalComments();
+
+        // Combine and sort by timestamp
+        const allComments = [
+            ...approvedComments.map(c => ({ ...c, isApproved: true })),
+            ...localComments.map(c => ({ ...c, isApproved: false, isPending: true }))
+        ].sort((a, b) => a.timestamp - b.timestamp);
+
+        if (allComments.length === 0) {
             container.innerHTML = '<p class="no-comments">No comments yet. Be the first to comment!</p>';
             return;
         }
 
-        container.innerHTML = comments.map(comment => `
-            <div class="comment-item" data-id="${comment.id}">
+        container.innerHTML = allComments.map(comment => `
+            <div class="comment-item ${comment.isPending ? 'pending-comment' : ''}" data-id="${comment.id}">
+                ${comment.isPending ? '<span class="pending-badge">Pending approval</span>' : ''}
                 <div class="comment-header">
                     <span class="comment-author">${escapeHtml(comment.name)}</span>
                     <span class="comment-date">${formatDate(comment.timestamp)}</span>
                 </div>
                 <p class="comment-text">${escapeHtml(comment.text)}</p>
-                <button class="comment-delete-btn" onclick="window.showDeleteModal('${comment.id}')">Delete</button>
+                ${comment.isPending ? `<button class="comment-delete-btn" onclick="window.showDeleteModal('${comment.id}')">Delete</button>` : ''}
             </div>
         `).join('');
     }
@@ -141,17 +165,17 @@
             return;
         }
 
-        if (deleteComment(commentId, password)) {
+        if (deleteLocalComment(commentId, password)) {
             window.closeDeleteModal();
             renderComments();
             alert('Comment deleted successfully.');
         } else {
-            alert('Incorrect password. Please try again.');
+            alert('Incorrect password or comment not found.');
         }
     };
 
     // Handle form submission
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
 
         const name = document.getElementById('comment-name').value.trim();
@@ -176,29 +200,32 @@
             passwordHash: hashPassword(password),
             text: text,
             timestamp: Date.now(),
-            articleUrl: window.location.href
+            articleUrl: window.location.href,
+            articlePath: getArticleId()
         };
 
-        // Save to localStorage
-        saveComment(comment);
+        // Save locally (pending approval)
+        saveLocalComment(comment);
 
-        // Send notification via EmailJS if available
+        // Send notification via EmailJS for approval
         if (typeof emailjs !== 'undefined') {
-            emailjs.send('service_k1ob3bf', 'template_nh74jz8', {
-                from_name: 'New Blog Comment',
-                message: `New comment on: ${window.location.href}\n\nName: ${name}\nEmail: ${email}\n\nComment:\n${text}`
-            }).catch(function(err) {
+            try {
+                await emailjs.send('service_k1ob3bf', 'template_nh74jz8', {
+                    from_name: 'New Blog Comment - Pending Approval',
+                    message: `NEW COMMENT SUBMISSION\n\nArticle: ${window.location.href}\nArticle Path: ${getArticleId()}\n\nName: ${name}\nEmail: ${email}\nComment ID: ${comment.id}\nTimestamp: ${comment.timestamp}\n\nComment Text:\n${text}\n\n---\nTo approve this comment, add it to /comments/comments.json`
+                });
+            } catch (err) {
                 console.log('Email notification failed:', err);
-            });
+            }
         }
 
         // Clear form
         e.target.reset();
 
         // Re-render comments
-        renderComments();
+        await renderComments();
 
-        alert('Your comment has been posted!');
+        alert('Your comment has been submitted! It will appear immediately on your device and will be visible to others after approval.');
     }
 
     // Initialize

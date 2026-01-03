@@ -1,0 +1,5 @@
+{
+  "_description": "Blog comments storage. Add new comments manually or via the admin process.",
+  "_format": "Each key is the article path (e.g., '/Blog/Article-Name.html'), value is array of comments",
+  "comments": {}
+}

@@ -1878,3 +1878,25 @@ main {
   font-style: italic;
   padding: 20px;
 }
+
+.loading-comments {
+  text-align: center;
+  color: #666;
+  padding: 20px;
+}
+
+.pending-comment {
+  border-left: 3px solid #ffc107;
+  background: #fffef5;
+}
+
+.pending-badge {
+  display: inline-block;
+  background: #ffc107;
+  color: #333;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
