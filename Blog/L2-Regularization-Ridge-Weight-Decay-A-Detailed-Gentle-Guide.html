@@ -459,27 +459,27 @@ for step in range(2000):
     <!-- ---------- FOOTER ---------- -->
     
     <!-- COMMENTS SECTION -->
-    <section class="comments-section">
-      <h3>Comments</h3>
+        <section class="comments-section" style="max-width:800px; margin:40px auto; padding:0 20px; font-family:myFirstFont;">
+      <h3 style="font-size:1.5rem; color:#121212; margin-bottom:1.5rem; padding-bottom:0.5rem; border-bottom:2px solid #ca0dc6; display:inline-block;">Comments</h3>
       
-      <form id="comment-form" class="comment-form">
-        <label for="comment-name">Name *</label>
-        <input type="text" id="comment-name" placeholder="Your name" required>
+      <form id="comment-form" class="comment-form" style="background:#f8f9fa; padding:25px; border-radius:12px; margin-bottom:30px; border:1px solid #e9ecef;">
+        <label for="comment-name" style="display:block; margin-bottom:8px; font-weight:600; color:#333; font-size:14px;">Name *</label>
+        <input type="text" id="comment-name" placeholder="Your name" required style="width:100%; padding:12px; border:1px solid #ddd; border-radius:6px; margin-bottom:15px; font-size:16px; box-sizing:border-box; display:block; background-color:#fff;">
         
-        <label for="comment-email">Email *</label>
-        <input type="email" id="comment-email" placeholder="Your email (not displayed)" required>
+        <label for="comment-email" style="display:block; margin-bottom:8px; font-weight:600; color:#333; font-size:14px;">Email *</label>
+        <input type="email" id="comment-email" placeholder="Your email (not displayed)" required style="width:100%; padding:12px; border:1px solid #ddd; border-radius:6px; margin-bottom:15px; font-size:16px; box-sizing:border-box; display:block; background-color:#fff;">
         
-        <label for="comment-password">Password *</label>
-        <input type="password" id="comment-password" placeholder="Create a password (for deleting later)" required>
-        <p class="form-note">Remember this password - you will need it to delete your comment.</p>
+        <label for="comment-password" style="display:block; margin-bottom:8px; font-weight:600; color:#333; font-size:14px;">Password *</label>
+        <input type="password" id="comment-password" placeholder="Create a password (for deleting later)" required style="width:100%; padding:12px; border:1px solid #ddd; border-radius:6px; margin-bottom:15px; font-size:16px; box-sizing:border-box; display:block; background-color:#fff;">
+        <p class="form-note" style="font-size:0.85rem; color:#666; margin-bottom:15px; margin-top:-10px;">Remember this password - you will need it to delete your comment.</p>
         
-        <label for="comment-text">Comment *</label>
-        <textarea id="comment-text" placeholder="Write your comment..." required></textarea>
+        <label for="comment-text" style="display:block; margin-bottom:8px; font-weight:600; color:#333; font-size:14px;">Comment *</label>
+        <textarea id="comment-text" placeholder="Write your comment..." required style="width:100%; padding:12px; border:1px solid #ddd; border-radius:6px; margin-bottom:15px; font-size:16px; box-sizing:border-box; display:block; background-color:#fff; min-height:120px; resize:vertical;"></textarea>
         
-        <button type="submit" class="submit-btn">Post Comment</button>
+        <button type="submit" class="submit-btn" style="background-color:#ca0dc6; color:#fff; border:none; padding:12px 30px; border-radius:6px; font-size:16px; cursor:pointer; font-family:myFirstFont; font-weight:600;">Post Comment</button>
       </form>
       
-      <div id="comments-list" class="comments-list"></div>
+      <div id="comments-list" class="comments-list" style="margin-top:30px;"></div>
     </section>
 
 <footer class="footer">
